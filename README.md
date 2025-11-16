@@ -1,39 +1,26 @@
 # Buddi 
-`Elderly Companion`
+`Elderly Companion App`
 
-Buddi is an elderly-focused health companion app that provides medication reminders, step monitoring, hospital appointment tracking, and weekly email updates to keep family members informed of the user’s activity.
+Buddi is an elderly focused companion app that features big, clear buttons for essential functions (call, message, camera, clock, emergency). It also handles medication and hospital appointment reminders, and steps tracking.
 
----
 
-## Group Information
-
+--- 
 ### Group Members
 
 | Name       | Matric No | Assigned Tasks                                      |
 |------------|-----------|----------------------------------------------------|
-| Anis Nazira binti Abd Ghani   | 2219732   | Backend API (Flask), YOLO Model Integration       |
-| Member 2   | XXXXXXX   | Flutter Frontend, UI Design                        |
-| Member 3   | XXXXXXX   | Database Setup (MySQL), Weekly Email Automation   |
+| ANIS NAZIRA BINTI ABD GHANI   | 2219732   | UI Design, Big buttons    |
+| NURAMIRATUL AISYAH BINTI RUZAIDI   | 2212736   |  Medication and Hospital Appointments Reminders                       |
+|AISHA MOHMMED ALWAN ALJUBOORI | 2125992   | Pedometer, Weekly Email Automation   |
 
 
 ## Features
 
+- **Big buttons :** Large, adjustable buttons.
 - **Medication Reminders:** Sends daily alerts for medications.  
 - **Step Monitoring:** Tracks daily steps using a pedometer.  
-- **Hospital Appointments:** Notifies users of upcoming appointments.  
+- **Hospital Appointments Reminders:** Notifies users of upcoming appointments.  
 - **Weekly Family Updates:** Sends automated weekly email summaries of the user’s activity.
 
 
-## Tech Stack
-
-- **Programming Languages:** Python (Advanced), Dart (Beginner), SQL Server & MySQL (Intermediate)  
-- **Frameworks & Libraries:** Flask, Flutter, YOLO (Ultralytics), Pandas, NumPy  
-- **Visualization Tools:** PowerBI (Intermediate)
-
----
-
-## Installation / Running Locally
-
-1. Clone the repository:  
-```bash
-git clone https://github.com/yourusername/buddi-elderly-wellness-flutter.git
+## References
