@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1063576635806",
+    "project_id": "buddi-94585",
+    "storage_bucket": "buddi-94585.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063576635806:android:b38ef5c6419c275718ee8f",
+        "android_client_info": {
+          "package_name": "com.example.buddi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANMNl0UANnZWGB71LTmq3af_OfSV4E_O0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
