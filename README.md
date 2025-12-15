@@ -128,7 +128,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 #### 2.1 Project Timeline Overview (Gantt Chart)
 
-![Gantt Chart](Buddi-GanttChart.jpeg)
+![Gantt Chart](Gantt-Chart.png)
 
 
 # 3. Project Design
