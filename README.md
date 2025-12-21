@@ -121,7 +121,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 - **Screen Navigation Flow**
  
-![Screen Navigation Flow](Buddi.jpeg)
+![Screen Navigation Flow](Screen-Navigation-Flow.png)
 
 
 ### 2. Planning
@@ -147,7 +147,7 @@ etc etc etc
 <br>
 
 
-The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. ###
+The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. 
 
 
 
