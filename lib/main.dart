@@ -19,15 +19,38 @@ class BuddiApp extends StatelessWidget {
     return MaterialApp(
       title: 'Buddi App',
       debugShowCheckedModeBanner: false,
+
+      // ✅ GOOGLE SANS FLEX APPLIED HERE (GLOBAL)
       theme: ThemeData(
+        fontFamily: 'GoogleSansFlex',
         primarySwatch: Colors.blue,
+
+        // ✅ Elderly-friendly typography defaults
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: 18),
+          bodyMedium: TextStyle(fontSize: 16),
+          titleLarge: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+          labelLarge: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
+
       home: const SignInPage(), // Show sign-in first
     );
   }
 }
 
-// Simple Sign-In Page
+// -------------------- SIGN IN PAGE --------------------
+
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -40,7 +63,6 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void _signIn() {
-    // For now, just skip Firebase logic
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
@@ -55,16 +77,25 @@ class _SignInPageState extends State<SignInPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              'Welcome to Buddi',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 24),
+
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
+            const SizedBox(height: 16),
+
             TextField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
+
             ElevatedButton(
               onPressed: _signIn,
               child: const Text('Sign In'),
@@ -76,21 +107,23 @@ class _SignInPageState extends State<SignInPage> {
   }
 }
 
-// Role Selection Page
+// -------------------- ROLE SELECTION PAGE --------------------
+
 class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Role')),
+      appBar: AppBar(
+        title: const Text('Select Role'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: () {
-                // Navigate to Elderly Home
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const ElderlyHomePage()),

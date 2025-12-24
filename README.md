@@ -121,7 +121,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 - **Screen Navigation Flow**
  
-![Screen Navigation Flow](Screen-Navigation-Flow.png)
+![Screen Navigation Flow](screen-nav-flow.png)
 
 
 ### 2. Planning
