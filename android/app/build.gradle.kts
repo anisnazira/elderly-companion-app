@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.buddi"       
-    compileSdk = flutter.compileSdkVersion                       
+    compileSdk = 34                      
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -23,8 +23,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.buddi" // Must match Firebase package name
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
