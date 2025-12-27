@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
-import '../../caregiver/appointmentforElderly/add_appointment_page.dart';
+import '../../caregiver/appointment/add_appointment_page.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentPage extends StatefulWidget {

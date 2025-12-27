@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class BottomNavBar extends StatelessWidget {
+class ElderlyBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const BottomNavBar({
+  const ElderlyBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,

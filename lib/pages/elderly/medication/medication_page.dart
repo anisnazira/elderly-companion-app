@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/notification_service.dart';
-import '../../caregiver/medicationforElderly/add_medication_page.dart';
+import '../../caregiver/medication/add_medication_page.dart';
 import 'package:intl/intl.dart';
 
 class MedicationPage extends StatefulWidget {

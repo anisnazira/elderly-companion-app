@@ -2,31 +2,30 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
-
-    // Apply Firebase / Google Services plugin
     id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.buddi"       
-    compileSdk = 34                      
+    namespace = "com.example.buddi"       // Device apps namespace safe
+    compileSdk = 36                        // Updated for plugins requiring SDK 36
     ndkVersion = flutter.ndkVersion
+
+    defaultConfig {
+        applicationId = "com.example.buddi" // Must match Firebase package name
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36                       // Updated for plugin compatibility
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true  // Enable Java 8+ desugaring
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    defaultConfig {
-        applicationId = "com.example.buddi" // Must match Firebase package name
-        minSdk = 21
-        targetSdk = 34
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        jvmTarget = "11"
     }
 
     buildTypes {
@@ -41,15 +40,9 @@ flutter {
 }
 
 dependencies {
-    // Import the Firebase BoM to manage versions automatically
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
-
-    // Firebase Analytics (example)
     implementation("com.google.firebase:firebase-analytics")
 
-    // Add any other Firebase SDKs you want to use (BoM handles versions)
-    // Examples:
-    // implementation("com.google.firebase:firebase-auth")
-    // implementation("com.google.firebase:firebase-firestore")
-    // implementation("com.google.firebase:firebase-storage")
+    // Required for Java 8+ features (like flutter_local_notifications)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
