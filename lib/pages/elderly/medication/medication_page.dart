@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/notification_service.dart';
-import '../../caregiver/medication/add_medication_page.dart';
 import 'package:intl/intl.dart';
 
 class MedicationPage extends StatefulWidget {
@@ -18,31 +17,29 @@ class _MedicationPageState extends State<MedicationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _fs.getMedicationsStream(elderId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error loading medications'));
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return StreamBuilder<QuerySnapshot>(
+      stream: _fs.getMedicationsStream(elderId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error loading medications'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          final docs = snapshot.data!.docs;
+        final docs = snapshot.data!.docs;
 
-          if (docs.isEmpty) {
-            return const Center(
-              child: Text('No medications found.'),
-            );
-          }
-
-          return ListView(
-            padding: const EdgeInsets.all(12),
-            children: docs.map((doc) => medicationCard(doc)).toList(),
+        if (docs.isEmpty) {
+          return const Center(
+            child: Text('No medications found.'),
           );
-        },
-      ),
+        }
+
+        return ListView(
+          padding: const EdgeInsets.all(12),
+          children: docs.map((doc) => medicationCard(doc)).toList(),
+        );
+      },
     );
   }
 
