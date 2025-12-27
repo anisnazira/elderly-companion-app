@@ -51,11 +51,11 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
-            label: 'Tasks',
+            label: 'Medication',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: 'Schedule',
+            label: 'Appointment',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
