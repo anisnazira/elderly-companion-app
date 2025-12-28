@@ -153,7 +153,11 @@ The palette was chosen for high contrast and visibility for elderly users. Blue 
 
 Font Family: Google Sans Flex
 
-![Google Sans Flex](./assets/google-sans-flex.jpeg) 
+
+<p align="center">
+  <img src="./assets/google-sans-flex.jpeg" width="300"/>
+</p>
+
 Large, Modern, Clear fonts improve readability and reduce eye strain for seniors.
 <br><br>
 
