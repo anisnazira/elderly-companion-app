@@ -140,8 +140,8 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 ### 3. Consistency
 #### 3.1 Color Palette
 
-![Color Pallette 1](assets\color-pallete1.svg) <br><br>
-![Color Pallette 2](assets\color-pallette.svg)
+![Color Pallette 1](./assets/color-pallete1.svg) <br><br>
+![Color Pallette 2](./assets/color-pallette.svg)
 
 
 The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. 
@@ -153,7 +153,7 @@ The palette was chosen for high contrast and visibility for elderly users. Blue 
 
 Font Family: Google Sans Flex
 
-![Google Sans Flex](assets\google-sans-flex.jpeg) 
+![Google Sans Flex](./assets/google-sans-flex.jpeg) 
 Large, Modern, Clear fonts improve readability and reduce eye strain for seniors.
 <br><br>
 
