@@ -134,17 +134,14 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 # 3. Project Design
 
 ### 1. User Interface (UI) 
-etc etc etc etc
+
 ### 2. User Experience (UX)
-etc etc etc
+
 ### 3. Consistency
 #### 3.1 Color Palette
 
-<p><span style="background-color:#4b70f6; color:white; padding:5px 10px; border-radius:5px;">#Blue</span></p>
-<p><span style="background-color:#fdbd00; color:white; padding:5px 10px; border-radius:5px;">#Red</span></p>
-<p><span style="background-color:#fe802e; color:white; padding:5px 10px; border-radius:5px;">#Red</span></p>
-
-<br>
+![Color Pallette 1](assets\color-pallete1.svg) <br><br>
+![Color Pallette 2](assets\color-pallette.svg)
 
 
 The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. 
@@ -154,9 +151,10 @@ The palette was chosen for high contrast and visibility for elderly users. Blue 
 
 #### 2.2 Typography
 
-Font Family: SF Pro (also known as San Francisco) 
+Font Family: Google Sans Flex
 
-Large, clear fonts improve readability and reduce eye strain for seniors.
+![Google Sans Flex](assets\google-sans-flex.jpeg) 
+Large, Modern, Clear fonts improve readability and reduce eye strain for seniors.
 <br><br>
 
 # 4. Project Development

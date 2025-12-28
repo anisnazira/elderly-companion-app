@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_sign_in: ^6.1.1
+  android_intent_plus: ^6.0.0
 
   cupertino_icons: ^1.0.8
 
@@ -59,6 +60,9 @@ flutter:
     - assets/buddi-logo.png
     - assets/elderly.png
     - assets/caregiver.png
+    - assets/color-pallette.svg
+    - assets/color-pallete1.svg
+    - assets/google-sans-flex.jpeg
 
   fonts:
     - family: GoogleSansFlex

@@ -6,7 +6,10 @@ import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/steps_page.dart';
 import '../elderly/profile/profile_page.dart';
-
+import 'package:url_launcher/url_launcher.dart';
+// Only import android_intent_plus if running on Android
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:android_intent_plus/android_intent.dart';
 
 class ElderlyHomePage extends StatefulWidget {
   final String selectedRole;
@@ -33,7 +36,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     _updateTime();
   }
 
-  // -------------------- TIME UPDATE (FIXED) --------------------
+  // -------------------- TIME UPDATE --------------------
   void _updateTime() {
     _timer?.cancel();
 
@@ -62,24 +65,14 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     switch (_currentIndex) {
       case 0:
         return const MedicationPage();
-
       case 1:
         return const AppointmentPage();
-
       case 2:
         return _homeContent();
-
       case 3:
         return const StepsPage();
-
       case 4:
-                return ProfilePage(
-                  initialRole: widget.selectedRole,
-                  
-                    );
-
-
-
+        return ProfilePage(initialRole: widget.selectedRole);
       default:
         return _homeContent();
     }
@@ -89,6 +82,69 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   Widget _homeContent() {
     final size = MediaQuery.of(context).size;
 
+    // Dummy numbers for testing
+    final String testPhoneNumber = "0123456789";
+    final String testEmergencyNumber = "999";
+
+    // -------------------- BUTTON ACTIONS --------------------
+    
+    void _openDialer(String number) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = AndroidIntent(
+          action: 'android.intent.action.DIAL', // DIAL instead of CALL
+          data: 'tel:$number',
+          );
+          intent.launch();
+        }
+    }
+
+
+    void _openWhatsApp(String number) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = AndroidIntent(
+          action: 'android.intent.action.VIEW',
+          data: 'https://wa.me/$number',
+          );
+          intent.launch();
+         }
+    }
+
+
+    void _openCamera() {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = AndroidIntent(action: 'android.media.action.IMAGE_CAPTURE');
+        intent.launch();
+      } else {
+        print("Camera intent only works on Android");
+      }
+    }
+
+    void _openCalendar() {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = AndroidIntent(
+          action: 'android.intent.action.MAIN',
+          package: 'com.android.calendar',
+        );
+        intent.launch();
+      } else {
+        print("Calendar intent only works on Android");
+      }
+    }
+
+    void _emergencyCall() {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final intent = AndroidIntent(
+          action: 'android.intent.action.DIAL',  // DIAL instead of CALL
+          data: 'tel:$testEmergencyNumber',      // Pre-fill number
+          );
+          intent.launch();
+          } else {
+            print("Emergency dialer only works on Android emulator/device");
+        }
+      }
+
+
+    // -------------------- UI --------------------
     return Padding(
       padding: EdgeInsets.all(size.width * 0.05),
       child: Column(
@@ -141,9 +197,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                         label: "Call",
                         icon: Icons.phone,
                         color: const Color(0xFF345EE9),
-                        onTap: () {
-                          // TODO: implement call
-                        },
+                        onTap: () => _openDialer(testPhoneNumber),
                       ),
                     ),
                     SizedBox(width: size.width * 0.03),
@@ -152,9 +206,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                         label: "WhatsApp",
                         icon: Icons.message,
                         color: const Color(0xFFF5C853),
-                        onTap: () {
-                          // TODO: WhatsApp
-                        },
+                        onTap: () => _openWhatsApp(testPhoneNumber),
                       ),
                     ),
                   ],
@@ -169,9 +221,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                         label: "Camera",
                         icon: Icons.camera_alt,
                         color: const Color(0xFFF5C853),
-                        onTap: () {
-                          // TODO: camera
-                        },
+                        onTap: _openCamera,
                       ),
                     ),
                     SizedBox(width: size.width * 0.03),
@@ -180,9 +230,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                         label: "Calendar",
                         icon: Icons.calendar_today,
                         color: const Color(0xFF345EE9),
-                        onTap: () {
-                          // TODO: calendar
-                        },
+                        onTap: _openCalendar,
                       ),
                     ),
                   ],
@@ -194,9 +242,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                   label: "Emergency",
                   icon: Icons.warning,
                   color: const Color(0xFFE2735D),
-                  onTap: () {
-                    // TODO: emergency action
-                  },
+                  onTap: _emergencyCall,
                   fullWidth: true,
                 ),
               ],
@@ -213,9 +259,6 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: _getBody(),
-
-      // Elderly-specific bottom nav bar
-      
       bottomNavigationBar: ElderlyBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -227,7 +270,6 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     );
   }
 }
-   
 
 // -------------------- ACTION BUTTON --------------------
 class ColoredActionButton extends StatelessWidget {
