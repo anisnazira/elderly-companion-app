@@ -139,7 +139,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 # 3. Project Design
 
 ## 1. User Interface (UI) 
-
+etc
 ## 2. User Experience (UX)
 
 ## 3. Consistency
