@@ -106,13 +106,13 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 ## **Sequence Diagram**
 
-<br><br><br>
+<br>
 
 
 | Mainpage (Big Buttons)|
 |-------------------|
 | <p align="center">
-  <img src="./assets/module1.drawio.png" width="300"/> </p> | 
+  <img src="./assets/module1.drawio.png" width="400"/> </p> | 
 
 | Medication Reminders | Hospital Appointment Reminders |
 |-------------------|-----------------|
@@ -120,7 +120,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 | Pedometer | Weekly Email Automation |
 |-------------------|-----------------|
-| ![Pedometer](dashboard-img/Screenshot%20(157).png) | ![Weekly Email Automation](dashboard-img/Screenshot%20(153).png) | 
+| ![Pedometer](assets/Module4.png) | ![Weekly Email Automation](assets\Module4.png) | 
 
 <br>
 

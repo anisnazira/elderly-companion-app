@@ -66,6 +66,8 @@ flutter:
     - assets/module1.drawio.png
     - assets/module2.drawio.png
     - assets/module3.drawio.png
+    - assets/Module4.png
+    - assets/Module6.png
 
   fonts:
     - family: GoogleSansFlex
