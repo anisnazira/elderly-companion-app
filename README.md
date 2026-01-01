@@ -120,7 +120,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 | Pedometer | Weekly Email Automation |
 |-------------------|-----------------|
-| ![Pedometer](assets/Module4.png) | ![Weekly Email Automation](assets\Module4.png) | 
+| ![Pedometer](assets/Module4.png) | ![Weekly Email Automation](assets/Module6.png) | 
 
 <br>
 
