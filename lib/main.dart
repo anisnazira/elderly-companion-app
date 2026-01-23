@@ -1,14 +1,20 @@
+import 'package:buddi/weeklyReport_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'pedometer_page.dart';
-
+import 'firebase_options.dart'; 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Hive (still OK to keep for your project)
+  // initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // initialize Hive
   await Hive.initFlutter();
-  await Hive.openBox('buddi_data');
+  await Hive.openBox('stepsBox');
 
   runApp(const BuddiApp());
 }
@@ -23,9 +29,7 @@ class BuddiApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-
-      // 👇 App opens directly to the pedometer page
-      home: const HomePage(),
+      home: WeeklyReportPage(),
     );
   }
 }
