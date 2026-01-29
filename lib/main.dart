@@ -125,7 +125,7 @@ class RoleSelectionPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ElderlyHomePage()),
                 );
@@ -135,7 +135,7 @@ class RoleSelectionPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CaregiverHomePage()),
                 );

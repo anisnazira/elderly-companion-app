@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_nav_bar.dart';
-import 'appointmentforElderly/add_appointment_page.dart';
-import 'medicationforElderly/add_medication_page.dart';
-import '../widgets/home_page_content.dart'; // keep Home Page placeholder
+import 'appointmentforElderly/appointment_homepage.dart';
+import 'medicationforElderly/medication_homepage.dart';
+import '../widgets/home_page_content.dart';
 import '../widgets/steps_page.dart';
 import '../widgets/profile_page.dart';
 
 class CaregiverHomePage extends StatefulWidget {
   const CaregiverHomePage({super.key});
+  
   @override
   State<CaregiverHomePage> createState() => _CaregiverHomePageState();
 }
@@ -16,8 +17,8 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
   int _selectedIndex = 2;
 
   final List<Widget> _pages = [
-    const AddMedicationPage(),    // index 0
-    const AddAppointmentPage(),   // index 1
+    const MedicationListPage(),      // index 0 - Updated to list page
+    const AppointmentListPage(),     // index 1 - You'll need to create this similar to medication
     const Center(child: Text('Home Page')), // index 2
     const Center(child: Text('Steps Page')), // index 3
     const Center(child: Text('Profile Page')), // index 4
@@ -32,7 +33,9 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Elderly Home')),
+      appBar: AppBar(
+        title: const Text('Caregiver Dashboard'),
+      ),
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
