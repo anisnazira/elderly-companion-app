@@ -24,7 +24,6 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
   final NotificationService _ns = NotificationService();
 
   final String elderId = 'elder_001';
-  bool _isSaving = false; // ✅ Prevent double-tap
 
   @override
   void dispose() {
@@ -39,7 +38,7 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
     final date = await showDatePicker(
       context: context,
       initialDate: now.add(const Duration(days: 1)),
-      firstDate: DateTime(now.year, now.month, now.day + 1),
+      firstDate: DateTime(now.year, now.month, now.day + 1), // ✅ tomorrow only
       lastDate: DateTime(2100),
     );
 
@@ -64,8 +63,6 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
   }
 
   Future<void> _saveAppointment() async {
-    if (_isSaving) return; // ✅ Prevent double-tap
-    
     if (!_formKey.currentState!.validate() || _selectedDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete all required fields')),
@@ -73,6 +70,7 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
       return;
     }
 
+    // ✅ Extra safety: future-date validation
     if (_selectedDateTime!.isBefore(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Appointment must be in the future')),
@@ -80,64 +78,44 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
       return;
     }
 
-    setState(() => _isSaving = true);
+    final data = {
+      'clinic': _clinicCtrl.text.trim(),
+      'notes': _notesCtrl.text.trim(),
+      'datetime': _selectedDateTime,
+      'attended': false,
+      'elderId': elderId,
+      'createdAt': DateTime.now(),
+    };
 
-    try {
-      final data = {
-        'clinic': _clinicCtrl.text.trim(),
-        'notes': _notesCtrl.text.trim(),
-        'datetime': _selectedDateTime,
-        'attended': false,
-        'elderId': elderId,
-        'createdAt': DateTime.now(),
-      };
+    final docRef = await _fs.addAppointment(data);
+    final id = docRef.id.hashCode & 0x7fffffff;
 
-      // ✅ Save to Firestore
-      final docRef = await _fs.addAppointment(data);
-      
-      // ✅ Schedule notifications in background (don't wait for it)
-      _scheduleNotifications(docRef.id);
+    // Schedule reminders
+    final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));
+    final halfHourBefore = _selectedDateTime!.subtract(const Duration(minutes: 30));
 
-      // ✅ Close immediately after saving
-      if (!mounted) return;
-      Navigator.pop(context, true);
-      
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving: $e')),
+    if (oneDayBefore.isAfter(DateTime.now())) {
+      await _ns.scheduleNotification(
+        id: id,
+        title: 'Appointment Reminder',
+        body: 'Tomorrow: ${_clinicCtrl.text}',
+        scheduledDate: oneDayBefore,
       );
     }
-  }
 
-  // ✅ Run notifications in background - don't block the UI
-  void _scheduleNotifications(String docId) async {
-    try {
-      final id = docId.hashCode & 0x7fffffff;
-      final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));
-      final halfHourBefore = _selectedDateTime!.subtract(const Duration(minutes: 30));
-
-      if (oneDayBefore.isAfter(DateTime.now())) {
-        await _ns.scheduleNotification(
-          id: id,
-          title: 'Appointment Reminder',
-          body: 'Tomorrow: ${_clinicCtrl.text}',
-          scheduledDate: oneDayBefore,
-        );
-      }
-
-      if (halfHourBefore.isAfter(DateTime.now())) {
-        await _ns.scheduleNotification(
-          id: id + 1,
-          title: 'Appointment Reminder',
-          body: 'In 30 minutes: ${_clinicCtrl.text}',
-          scheduledDate: halfHourBefore,
-        );
-      }
-    } catch (e) {
-      print('Notification scheduling error (non-critical): $e');
+    if (halfHourBefore.isAfter(DateTime.now())) {
+      await _ns.scheduleNotification(
+        id: id + 1,
+        title: 'Appointment Reminder',
+        body: 'In 30 minutes: ${_clinicCtrl.text}',
+        scheduledDate: halfHourBefore,
+      );
     }
+
+    if (!mounted) return;
+
+    // ✅ Return true so appointment list refreshes
+    Navigator.pop(context, true);
   }
 
   @override
@@ -151,7 +129,7 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
         title: const Text('Add Appointment'),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context, false),
+          onPressed: () => Navigator.pop(context, true),
         ),
       ),
       body: Padding(
@@ -187,7 +165,7 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isSaving ? null : () => Navigator.pop(context, false),
+                      onPressed: () => Navigator.pop(context, true),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         textStyle: const TextStyle(fontSize: 16),
@@ -198,18 +176,12 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isSaving ? null : _saveAppointment,
+                      onPressed: _saveAppointment,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         textStyle: const TextStyle(fontSize: 16),
                       ),
-                      child: _isSaving 
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Save'),
+                      child: const Text('Save'),
                     ),
                   ),
                 ],
@@ -220,4 +192,4 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
       ),
     );
   }
-} 
+}
