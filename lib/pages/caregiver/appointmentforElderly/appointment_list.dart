@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../services/firestore_service.dart';
-import 'add_medication_page.dart';
-import 'medication_detail_page.dart';
+import 'add_appointment_page.dart';
+import 'appointment_detail_page.dart';
 
-class MedicationListPage extends StatefulWidget {
-  const MedicationListPage({super.key});
+class AppointmentListPage extends StatefulWidget {
+  const AppointmentListPage({super.key});
 
   @override
-  State<MedicationListPage> createState() => _MedicationListPageState();
+  State<AppointmentListPage> createState() => _AppointmentListPageState();
 }
 
-class _MedicationListPageState extends State<MedicationListPage> {
+class _AppointmentListPageState extends State<AppointmentListPage> {
   final FirestoreService _fs = FirestoreService();
-  final String elderId = 'elder_001'; // Replace with actual auth
+  final String elderId = 'elder_001';
 
-  Future<void> _deleteMedication(String docId) async {
+  Future<void> _deleteAppointment(String docId) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Medication'),
-        content: const Text('Are you sure you want to delete this medication?'),
+        title: const Text('Delete Appointment'),
+        content: const Text('Are you sure you want to delete this appointment?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -36,26 +36,28 @@ class _MedicationListPageState extends State<MedicationListPage> {
     );
 
     if (confirm == true) {
-      await _fs.deleteMedication(docId);
+      await _fs.deleteAppointment(docId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Medication deleted')),
+        const SnackBar(
+          content: Text('Appointment deleted'),
+          duration: Duration(seconds: 3),
+        ),
       );
     }
   }
 
-  void _navigateToAddEdit({Map<String, dynamic>? medicationData, String? docId}) async {
+  void _navigateToAddEdit({Map<String, dynamic>? appointmentData, String? docId}) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddEditMedicationPage(
-          medicationData: medicationData,
-          docId: docId,
+        builder: (context) => AddEditAppointmentPage(
+          appointmentData: appointmentData ?? {},
+          docId: docId ?? '',
         ),
       ),
     );
 
-    // Refresh list if medication was saved
     if (result == true) {
       setState(() {});
     }
@@ -65,14 +67,13 @@ class _MedicationListPageState extends State<MedicationListPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MedicationDetailPage(
-          medicationData: data,
+        builder: (context) => AppointmentDetailPage(
+          appointmentData: data,
           docId: docId,
         ),
       ),
     );
 
-    // Refresh if changes were made
     if (result == true) {
       setState(() {});
     }
@@ -82,11 +83,12 @@ class _MedicationListPageState extends State<MedicationListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medications'),
+        title: const Text('Appointments'),
+        centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _fs.getMedicationsStream(elderId),
+        stream: _fs.getAppointmentsStream(elderId),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -96,32 +98,31 @@ class _MedicationListPageState extends State<MedicationListPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final medications = snapshot.data?.docs ?? [];
+          final appointments = snapshot.data?.docs ?? [];
 
-          // Empty state
-          if (medications.isEmpty) {
+          if (appointments.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.medication_outlined, size: 80, color: Colors.grey[400]),
+                  Icon(Icons.event_note, size: 80, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'No medications yet',
+                    'No appointments yet',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Add a medication to get started',
+                    'Add an appointment to get started',
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => _navigateToAddEdit(),
                     icon: const Icon(Icons.add),
-                    label: const Text('Add Medication'),
+                    label: const Text('Add Appointment'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
@@ -131,20 +132,18 @@ class _MedicationListPageState extends State<MedicationListPage> {
             );
           }
 
-          // List of medications
           return ListView.builder(
             padding: const EdgeInsets.all(8),
-            itemCount: medications.length,
+            itemCount: appointments.length,
             itemBuilder: (context, index) {
-              final doc = medications[index];
+              final doc = appointments[index];
               final data = doc.data() as Map<String, dynamic>;
-              final name = data['name'] ?? 'No name';
-              final dose = data['dose'] ?? '';
-              final timesPerDay = data['timesPerDay'] ?? 1;
-              final hoursBetween = data['hoursBetween'] ?? 8;
-              final firstDoseTime = (data['firstDoseTime'] as Timestamp?)?.toDate();
-              final taken = data['taken'] ?? false;
-              final takenAt = (data['takenAt'] as Timestamp?)?.toDate();
+              final clinic = data['clinic'] ?? 'No clinic';
+              final notes = data['notes'] ?? '';
+              final datetime = (data['datetime'] as Timestamp?)?.toDate();
+              final attended = data['attended'] ?? false;
+
+              final isUpcoming = datetime != null && datetime.isAfter(DateTime.now());
 
               return Dismissible(
                 key: Key(doc.id),
@@ -162,12 +161,11 @@ class _MedicationListPageState extends State<MedicationListPage> {
                 ),
                 confirmDismiss: (direction) async {
                   if (direction == DismissDirection.endToStart) {
-                    // Swipe left to delete
                     return await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Delete Medication'),
-                        content: Text('Delete "$name"?'),
+                        title: const Text('Delete Appointment'),
+                        content: Text('Delete appointment at "$clinic"?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context, false),
@@ -181,23 +179,21 @@ class _MedicationListPageState extends State<MedicationListPage> {
                       ),
                     );
                   } else {
-                    // Swipe right to edit
-                    _navigateToAddEdit(medicationData: data, docId: doc.id);
-                    return false; // Don't dismiss
+                    _navigateToAddEdit(appointmentData: data, docId: doc.id);
+                    return false;
                   }
                 },
                 onDismissed: (direction) {
                   if (direction == DismissDirection.endToStart) {
-                    _fs.deleteMedication(doc.id);
+                    _fs.deleteAppointment(doc.id);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('$name deleted'),
+                        content: Text('Appointment at $clinic deleted'),
                         duration: const Duration(seconds: 3),
                         action: SnackBarAction(
                           label: 'Undo',
                           onPressed: () {
-                            // Re-add medication (simplified - you may want to store deleted data)
-                            _fs.addMedication(data);
+                            _fs.addAppointment(data);
                           },
                         ),
                       ),
@@ -209,36 +205,66 @@ class _MedicationListPageState extends State<MedicationListPage> {
                   elevation: 2,
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: taken ? Colors.green : Colors.orange,
+                      backgroundColor: attended 
+                          ? Colors.green 
+                          : (isUpcoming ? Colors.blue : Colors.grey),
                       child: Icon(
-                        taken ? Icons.check : Icons.medication,
+                        attended 
+                            ? Icons.check 
+                            : (isUpcoming ? Icons.event : Icons.event_busy),
                         color: Colors.white,
                       ),
                     ),
                     title: Text(
-                      name,
+                      clinic,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Dose: $dose'),
-                        Text('$timesPerDay times/day, every $hoursBetween hours'),
-                        if (firstDoseTime != null)
-                          Text('First dose: ${DateFormat.jm().format(firstDoseTime)}'),
-                        if (taken && takenAt != null)
-                          Text(
-                            'Taken at ${DateFormat.jm().format(takenAt)}',
-                            style: const TextStyle(
+                        if (datetime != null) ...[
+                          Text('${DateFormat.yMMMd().format(datetime)} at ${DateFormat.jm().format(datetime)}'),
+                          if (isUpcoming && !attended)
+                            Text(
+                              'Upcoming',
+                              style: TextStyle(
+                                color: Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          if (!isUpcoming && !attended)
+                            Text(
+                              'Past',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                        ],
+                        if (attended)
+                          const Text(
+                            'Attended',
+                            style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
+                        if (notes.isNotEmpty)
+                          Text(
+                            notes,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
                       ],
                     ),
                     trailing: Icon(
-                      taken ? Icons.check_circle : Icons.schedule,
-                      color: taken ? Colors.green : Colors.grey,
+                      attended 
+                          ? Icons.check_circle 
+                          : (isUpcoming ? Icons.schedule : Icons.history),
+                      color: attended 
+                          ? Colors.green 
+                          : (isUpcoming ? Colors.blue : Colors.grey),
                     ),
                     onTap: () => _navigateToDetail(data, doc.id),
                   ),
@@ -248,10 +274,10 @@ class _MedicationListPageState extends State<MedicationListPage> {
           );
         },
       ),
-      // Floating action button as alternative to app bar button
       floatingActionButton: FloatingActionButton(
+        heroTag: 'addAppointmentFAB', // ✅ Fix Hero conflict
         onPressed: () => _navigateToAddEdit(),
-        tooltip: 'Add Medication',
+        tooltip: 'Add Appointment',
         child: const Icon(Icons.add),
       ),
     );

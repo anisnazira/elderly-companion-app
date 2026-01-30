@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
-import 'package:intl/intl.dart';
+import 'appointment_detail_page.dart'; // We create this next
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({super.key});
@@ -12,65 +13,119 @@ class AppointmentPage extends StatefulWidget {
 
 class _AppointmentPageState extends State<AppointmentPage> {
   final FirestoreService _fs = FirestoreService();
-  final String elderId = 'elder_001'; // replace with auth later
+  final String elderId = 'elder_001'; 
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _fs.getAppointmentsStream(elderId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error loading appointments'));
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  Future<void> _markAttended(String docId, bool currentStatus) async {
+    await _fs.updateAppointment(docId, {'attended': !currentStatus});
+    if(!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Attendance status updated")),
+    );
+  }
 
-          final docs = snapshot.data!.docs;
-
-          if (docs.isEmpty) {
-            return const Center(
-              child: Text('No appointments found.'),
-            );
-          }
-
-          return ListView(
-            padding: const EdgeInsets.all(12),
-            children: docs.map((doc) => appointmentCard(doc)).toList(),
-          );
-        },
+  void _navigateToDetail(Map<String, dynamic> data) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ElderlyAppointmentDetailPage(appointmentData: data),
       ),
     );
   }
 
-  Widget appointmentCard(QueryDocumentSnapshot doc) {
-    final data = doc.data()! as Map<String, dynamic>;
-    final clinic = data['clinic'] ?? 'Clinic';
-    final notes = data['notes'] ?? '';
-    final attended = data['attended'] ?? false;
-    final id = doc.id;
-
-    final timestamp = data['datetime'] != null
-        ? (data['datetime'] as Timestamp).toDate()
-        : null;
-
-    final timeString = timestamp != null
-        ? DateFormat.yMMMd().add_jm().format(timestamp)
-        : 'No date';
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: Text(clinic, style: const TextStyle(fontSize: 20)),
-        subtitle: Text('$timeString\n$notes'),
-        isThreeLine: true,
-        trailing: ElevatedButton(
-          onPressed: () async {
-            await _fs.updateAppointment(id, {'attended': !attended});
-          },
-          child: Text(attended ? 'Attended' : 'Mark Attended'),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Appointments'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _fs.getAppointmentsStream(elderId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          
+          final docs = snapshot.data!.docs;
+          
+          if (docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle_outline, size: 80, color: Colors.grey[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No upcoming appointments.',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final doc = docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+              final date = (data['datetime'] as Timestamp?)?.toDate();
+              final dateStr = date != null ? DateFormat.yMMMd().format(date) : 'No Date';
+              final timeStr = date != null ? DateFormat.jm().format(date) : '';
+              final attended = data['attended'] ?? false;
+
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  onTap: () => _navigateToDetail(data),
+                  leading: Container(
+                    width: 50, // Fix the width so it looks neat
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min, // ✅ FIX: Tells column to shrink to fit
+                      children: [
+                        Text(
+                          date != null ? DateFormat.d().format(date) : '?',
+                          style: const TextStyle(
+                            fontSize: 20, // ✅ FIX: Reduced from 24 to 20 to prevent overflow
+                            fontWeight: FontWeight.bold, 
+                            color: Colors.blue
+                          ),
+                        ),
+                        Text(
+                          date != null ? DateFormat.MMM().format(date) : '',
+                          style: const TextStyle(
+                            fontSize: 12, // ✅ FIX: Slightly smaller month text
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  title: Text(
+                    data['clinic'] ?? 'Clinic',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text(
+                    '$timeStr\n${data['doctor'] ?? ''}',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () => _markAttended(doc.id, attended),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: attended ? Colors.green : Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(attended ? 'Done' : 'Confirm'),
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -103,83 +103,86 @@ class _AddEditMedicationPageState extends State<AddEditMedicationPage> {
   }
 
   Future<void> _saveMedication() async {
-    if (!_formKey.currentState!.validate() || _firstDoseTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields and select first dose time')),
-      );
-      return;
-    }
-
-    final doseTimes = _calculateDoseTimes();
-    
-    final data = {
-      'name': _nameCtrl.text.trim(),
-      'dose': _doseCtrl.text.trim(),
-      'instructions': _instructionsCtrl.text.trim(),
-      'prescribedBy': _prescribedByCtrl.text.trim(),
-      'timesPerDay': _timesPerDay,
-      'hoursBetween': _hoursBetween,
-      'firstDoseTime': _firstDoseTime,
-      'doseTimes': doseTimes.map((t) => t.toIso8601String()).toList(),
-      'taken': widget.medicationData?['taken'] ?? false,
-      'takenAt': widget.medicationData?['takenAt'],
-      'elderId': elderId,
-      'updatedAt': DateTime.now(),
-    };
-
-    try {
-      if (isEditing) {
-        // Update existing medication
-        await _fs.updateMedication(widget.docId!, data);
-        
-        // Cancel old notifications
-        for (int i = 0; i < 10; i++) {
-          final oldId = (widget.docId!.hashCode + i) & 0x7fffffff;
-          await _ns.cancelNotification(oldId);
-        }
-      } else {
-        // Add new medication
-        data['createdAt'] = DateTime.now();
-      }
-
-      final docRef = isEditing
-          ? FirebaseFirestore.instance.collection('medications').doc(widget.docId)
-          : await _fs.addMedication(data);
-
-      // Schedule notifications for each dose time
-      final baseId = (isEditing ? widget.docId! : docRef.id).hashCode & 0x7fffffff;
-      for (int i = 0; i < doseTimes.length; i++) {
-        await _ns.scheduleNotification(
-          id: baseId + i,
-          title: 'Medication Reminder',
-          body: 'Time to take ${_nameCtrl.text} - ${_doseCtrl.text}',
-          scheduledDate: doseTimes[i],
-        );
-      }
-
-      if (!mounted) return;
-      
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isEditing ? 'Medication updated successfully' : 'Medication saved successfully'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      
-      // Go back to list page
-      Navigator.pop(context, true);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+  if (!_formKey.currentState!.validate() || _firstDoseTime == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please fill all required fields and select first dose time')),
+    );
+    return;
   }
+
+  final doseTimes = _calculateDoseTimes();
+  
+  final data = {
+    'name': _nameCtrl.text.trim(),
+    'dose': _doseCtrl.text.trim(),
+    'instructions': _instructionsCtrl.text.trim(),
+    'prescribedBy': _prescribedByCtrl.text.trim(),
+    'timesPerDay': _timesPerDay,
+    'hoursBetween': _hoursBetween,
+    'firstDoseTime': _firstDoseTime,
+    'doseTimes': doseTimes.map((t) => t.toIso8601String()).toList(),
+    'taken': widget.medicationData?['taken'] ?? false,
+    'takenAt': widget.medicationData?['takenAt'],
+    'elderId': elderId,
+    'updatedAt': DateTime.now(),
+  };
+
+  try {
+    String documentId;
+    
+    if (isEditing) {
+      // Update existing medication
+      await _fs.updateMedication(widget.docId!, data);
+      documentId = widget.docId!;
+      
+      // Cancel old notifications
+      for (int i = 0; i < 10; i++) {
+        final oldId = (documentId.hashCode + i) & 0x7fffffff;
+        await _ns.cancelNotification(oldId);
+      }
+    } else {
+      // Add new medication
+      data['createdAt'] = DateTime.now();
+      
+      // Get document reference and extract ID
+      final docRef = await _fs.addMedication(data);
+      documentId = docRef.id;
+    }
+
+    // Schedule notifications for each dose time
+    final baseId = documentId.hashCode & 0x7fffffff;
+    for (int i = 0; i < doseTimes.length; i++) {
+      await _ns.scheduleNotification(
+        id: baseId + i,
+        title: 'Medication Reminder',
+        body: 'Time to take ${_nameCtrl.text} - ${_doseCtrl.text}',
+        scheduledDate: doseTimes[i],
+      );
+    }
+
+    if (!mounted) return;
+    
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(isEditing ? 'Medication updated successfully' : 'Medication saved successfully'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // Go back to list page
+    Navigator.pop(context, true);
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {

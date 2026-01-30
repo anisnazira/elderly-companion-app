@@ -20,7 +20,7 @@ class FirestoreService {
   Stream<QuerySnapshot> getMedicationsStream(String elderId) {
     return medications
         .where('elderId', isEqualTo: elderId)
-        .orderBy('time')  // ADD THIS - orders by medication time
+        .orderBy('createdAt', descending: true)  // Changed from 'time' to 'createdAt'
         .snapshots();
   }
 

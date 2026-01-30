@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_nav_bar.dart';
-import 'appointmentforElderly/appointment_homepage.dart';
-import 'medicationforElderly/medication_homepage.dart';
+import 'appointmentforElderly/appointment_list.dart';
+import 'medicationforElderly/medication_list.dart';
 import '../widgets/home_page_content.dart';
 import '../widgets/steps_page.dart';
 import '../widgets/profile_page.dart';
