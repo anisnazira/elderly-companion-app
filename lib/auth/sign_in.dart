@@ -13,7 +13,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController emailController =
-      TextEditingController(text: kDebugMode ? 'razakmisbun@gmail.com' : '');
+      TextEditingController    (text: kDebugMode ? 'razakmisbun@gmail.com' : '');
   final TextEditingController passwordController =
       TextEditingController(text: kDebugMode ? '100394' : '');
 
