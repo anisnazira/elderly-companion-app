@@ -12,15 +12,33 @@
           "package_name": "com.example.buddi"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1063576635806-n7lf3gevmr3p9ki415pgmsd7f7t4656i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.buddi",
+            "certificate_hash": "2231454e45c8d6cfc59dc49c53f4d20d220fc26c"
+          }
+        },
+        {
+          "client_id": "1063576635806-2p3dld87sfo5odtco3oahqnbbvugh477.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyANMNl0UANnZWGB71LTmq3af_OfSV4E_O0"
+          "current_key": "AIzaSyDruqesr13koEarAyrUb7C5fEtBN012bVQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063576635806-2p3dld87sfo5odtco3oahqnbbvugh477.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
