@@ -4,21 +4,53 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'role_selection.dart';
 
-class SignInPage extends StatelessWidget {
-  SignInPage({super.key});
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
-  final TextEditingController usernameController =
-      TextEditingController(text: kDebugMode ? 'anisnaziraa78@gmail.com' : '');
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  final TextEditingController emailController =
+      TextEditingController(text: kDebugMode ? 'razakmisbun@gmail.com' : '');
   final TextEditingController passwordController =
-      TextEditingController(text: kDebugMode ? '100394an' : '');
+      TextEditingController(text: kDebugMode ? '100394' : '');
 
-  void signUserIn(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
-    );
+  bool isLoading = false;
+  final _auth = FirebaseAuth.instance;
+
+  // ---------------- EMAIL/PASSWORD LOGIN ----------------
+  Future<void> signInWithEmail(BuildContext context) async {
+    setState(() => isLoading = true);
+
+    try {
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (userCredential.user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'An error occurred';
+      if (e.code == 'user-not-found') {
+        message = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Wrong password provided.';
+      }
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
+  // ---------------- GOOGLE LOGIN ----------------
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -79,10 +111,10 @@ class SignInPage extends StatelessWidget {
 
                     SizedBox(height: size.height * 0.02),
 
-                    // Username field
+                    // Email field
                     MyTextField(
-                      controller: usernameController,
-                      hintText: 'Username',
+                      controller: emailController,
+                      hintText: 'Email',
                       obscureText: false,
                     ),
 
@@ -102,33 +134,44 @@ class SignInPage extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600], fontSize: size.width * 0.035),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: size.width * 0.035,
+                        ),
                       ),
                     ),
 
                     SizedBox(height: size.height * 0.02),
 
-                    // Smaller sign in button
-                    MyButton(
-                      height: size.height * 0.06,
-                      fontSize: size.width * 0.04,
-                      onTap: () => signUserIn(context),
-                    ),
+                    // Sign in button with loading
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : MyButton(
+                            height: size.height * 0.06,
+                            fontSize: size.width * 0.04,
+                            onTap: () => signInWithEmail(context),
+                          ),
 
                     SizedBox(height: size.height * 0.03),
 
                     // Divider with "or continue with"
                     Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.grey[400], thickness: 0.5)),
+                        Expanded(
+                            child:
+                                Divider(color: Colors.grey[400], thickness: 0.5)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
                             'Or continue with',
-                            style: TextStyle(color: Colors.grey[700], fontSize: size.width * 0.035),
+                            style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: size.width * 0.035),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.grey[400], thickness: 0.5)),
+                        Expanded(
+                            child:
+                                Divider(color: Colors.grey[400], thickness: 0.5)),
                       ],
                     ),
 
@@ -144,14 +187,26 @@ class SignInPage extends StatelessWidget {
                             if (user != null) {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
+                                MaterialPageRoute(
+                                    builder: (_) => const RoleSelectionPage()),
                               );
                             }
                           },
-                          child: SquareTile(imagePath: 'assets/google.png', size: 50),
+                          child: SquareTile(
+                              imagePath: 'assets/google.png', size: 50),
                         ),
                         SizedBox(width: size.width * 0.05),
-                        SquareTile(imagePath: 'assets/apple.png', size: 50),
+                        GestureDetector(
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Apple sign-in coming soon'),
+                              ),
+                            );
+                          },
+                          child:
+                              SquareTile(imagePath: 'assets/apple.png', size: 50),
+                        ),
                       ],
                     ),
 
@@ -163,7 +218,9 @@ class SignInPage extends StatelessWidget {
                       children: [
                         Text(
                           'Not a member?',
-                          style: TextStyle(color: Colors.grey[700], fontSize: size.width * 0.035),
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: size.width * 0.035),
                         ),
                         SizedBox(width: 4),
                         Text(
@@ -207,7 +264,7 @@ class MyButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         margin: const EdgeInsets.symmetric(horizontal: 0),
         decoration: BoxDecoration(
-          color: Color(0xFF345EE9),
+          color: const Color(0xFF345EE9),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
