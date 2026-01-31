@@ -1,16 +1,24 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../widgets/elderly_bottom_nav_bar.dart'; 
+import 'package:android_intent_plus/android_intent.dart';
+import '../../widgets/elderly_bottom_nav_bar.dart';
 import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/steps_page.dart';
 import '../elderly/profile/profile_page.dart';
-import 'package:url_launcher/url_launcher.dart';
-// Only import android_intent_plus if running on Android
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
-import 'package:android_intent_plus/android_intent.dart';
 
+// ---------------- COLOR PALETTE ----------------
+const Color blackColor = Color(0xFF000000);
+const Color whiteColor = Color(0xFFFDFBFE);
+const Color brightPurpleColor = Color(0xFF7F00FF);
+const Color lightGreenColor = Color(0xFFD9FD6D);
+const Color orangeColor = Color(0xFFE9914E);
+const Color blueColor = Color(0xFF52B1FF);
+const Color redColor = Color(0xFFFF8C75);
+
+// ---------------- ELDERLY HOME PAGE ----------------
 class ElderlyHomePage extends StatefulWidget {
   final String selectedRole;
 
@@ -26,7 +34,6 @@ class ElderlyHomePage extends StatefulWidget {
 class _ElderlyHomePageState extends State<ElderlyHomePage> {
   late String _currentTime;
   late String _currentDay;
-
   int _currentIndex = 2; // Home tab
   Timer? _timer;
 
@@ -36,7 +43,6 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     _updateTime();
   }
 
-  // -------------------- TIME UPDATE --------------------
   void _updateTime() {
     _timer?.cancel();
 
@@ -60,7 +66,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     super.dispose();
   }
 
-  // -------------------- PAGE SWITCHING --------------------
+  // ---------------- PAGE SWITCHING ----------------
   Widget _getBody() {
     switch (_currentIndex) {
       case 0:
@@ -78,73 +84,56 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     }
   }
 
-  // -------------------- HOME CONTENT --------------------
+  // ---------------- HOME CONTENT ----------------
   Widget _homeContent() {
     final size = MediaQuery.of(context).size;
 
-    // Dummy numbers for testing
     final String testPhoneNumber = "0123456789";
     final String testEmergencyNumber = "999";
 
-    // -------------------- BUTTON ACTIONS --------------------
-    
+    // ---------------- BUTTON ACTIONS ----------------
     void _openDialer(String number) {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = AndroidIntent(
-          action: 'android.intent.action.DIAL', // DIAL instead of CALL
-          data: 'tel:$number',
-          );
-          intent.launch();
-        }
+        final intent =
+            AndroidIntent(action: 'android.intent.action.DIAL', data: 'tel:$number');
+        intent.launch();
+      }
     }
-
 
     void _openWhatsApp(String number) {
       if (defaultTargetPlatform == TargetPlatform.android) {
         final intent = AndroidIntent(
-          action: 'android.intent.action.VIEW',
-          data: 'https://wa.me/$number',
-          );
-          intent.launch();
-         }
+            action: 'android.intent.action.VIEW', data: 'https://wa.me/$number');
+        intent.launch();
+      }
     }
-
 
     void _openCamera() {
       if (defaultTargetPlatform == TargetPlatform.android) {
         final intent = AndroidIntent(action: 'android.media.action.IMAGE_CAPTURE');
         intent.launch();
-      } else {
-        print("Camera intent only works on Android");
       }
     }
 
     void _openCalendar() {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = AndroidIntent(
-          action: 'android.intent.action.MAIN',
-          package: 'com.android.calendar',
-        );
+        final intent =
+            AndroidIntent(action: 'android.intent.action.MAIN', package: 'com.android.calendar');
         intent.launch();
-      } else {
-        print("Calendar intent only works on Android");
       }
     }
 
     void _emergencyCall() {
       if (defaultTargetPlatform == TargetPlatform.android) {
         final intent = AndroidIntent(
-          action: 'android.intent.action.DIAL',  // DIAL instead of CALL
-          data: 'tel:$testEmergencyNumber',      // Pre-fill number
-          );
-          intent.launch();
-          } else {
-            print("Emergency dialer only works on Android emulator/device");
-        }
+          action: 'android.intent.action.DIAL',
+          data: 'tel:$testEmergencyNumber',
+        );
+        intent.launch();
       }
+    }
 
-
-    // -------------------- UI --------------------
+    // ---------------- UI ----------------
     return Padding(
       padding: EdgeInsets.all(size.width * 0.05),
       child: Column(
@@ -152,24 +141,24 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
         children: [
           SizedBox(height: size.height * 0.06),
 
-          // Time
+          // TIME
           Text(
             _currentTime,
             style: TextStyle(
               fontSize: size.width * 0.12,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: blackColor,
             ),
           ),
 
           SizedBox(height: size.height * 0.005),
 
-          // Day
+          // DAY
           Text(
             _currentDay,
             style: TextStyle(
               fontSize: size.width * 0.045,
-              color: Colors.black54,
+              color: blackColor.withOpacity(0.7),
             ),
           ),
 
@@ -180,13 +169,13 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
             "Steps Taken: 3450 | Next Med: 10:30 AM",
             style: TextStyle(
               fontSize: size.width * 0.035,
-              color: Colors.black87,
+              color: blackColor,
             ),
           ),
 
           SizedBox(height: size.height * 0.04),
 
-          // Buttons
+          // ---------------- BUTTON GRID ----------------
           Expanded(
             child: Column(
               children: [
@@ -196,52 +185,49 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                       child: ColoredActionButton(
                         label: "Call",
                         icon: Icons.phone,
-                        color: const Color(0xFF345EE9),
+                        color: blueColor,
                         onTap: () => _openDialer(testPhoneNumber),
                       ),
                     ),
-                    SizedBox(width: size.width * 0.03),
+                    SizedBox(width: size.width * 0.04),
                     Expanded(
                       child: ColoredActionButton(
                         label: "WhatsApp",
                         icon: Icons.message,
-                        color: const Color(0xFFF5C853),
+                        color: orangeColor,
                         onTap: () => _openWhatsApp(testPhoneNumber),
                       ),
                     ),
                   ],
                 ),
-
                 SizedBox(height: size.height * 0.025),
-
                 Row(
                   children: [
                     Expanded(
                       child: ColoredActionButton(
                         label: "Camera",
                         icon: Icons.camera_alt,
-                        color: const Color(0xFFF5C853),
+                        color: brightPurpleColor,
                         onTap: _openCamera,
                       ),
                     ),
-                    SizedBox(width: size.width * 0.03),
+                    SizedBox(width: size.width * 0.04),
                     Expanded(
                       child: ColoredActionButton(
                         label: "Calendar",
                         icon: Icons.calendar_today,
-                        color: const Color(0xFF345EE9),
+                        color: lightGreenColor,
                         onTap: _openCalendar,
                       ),
                     ),
                   ],
                 ),
-
                 SizedBox(height: size.height * 0.025),
-
+                // Emergency button spans full width
                 ColoredActionButton(
                   label: "Emergency",
                   icon: Icons.warning,
-                  color: const Color(0xFFE2735D),
+                  color: redColor,
                   onTap: _emergencyCall,
                   fullWidth: true,
                 ),
@@ -253,11 +239,11 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     );
   }
 
-  // -------------------- SCAFFOLD --------------------
+  // ---------------- SCAFFOLD ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: whiteColor,
       body: _getBody(),
       bottomNavigationBar: ElderlyBottomNavBar(
         currentIndex: _currentIndex,
@@ -271,11 +257,11 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   }
 }
 
-// -------------------- ACTION BUTTON --------------------
+// ---------------- GOOGLE-STYLE BOTTOM-LINE BUTTON ----------------
 class ColoredActionButton extends StatelessWidget {
   final String label;
   final IconData icon;
-  final Color color;
+  final Color color; // background
   final VoidCallback onTap;
   final bool fullWidth;
 
@@ -283,7 +269,7 @@ class ColoredActionButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.icon,
-    required this.color,
+    this.color = Colors.white,
     required this.onTap,
     this.fullWidth = false,
   });
@@ -297,32 +283,32 @@ class ColoredActionButton extends StatelessWidget {
       child: Container(
         height: size.height * 0.12,
         width: fullWidth ? double.infinity : null,
-        margin: const EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 6,
-              offset: Offset(0, 4),
+          borderRadius: BorderRadius.circular(20),
+          border: Border(
+            bottom: BorderSide(
+              color: blackColor, // thick bottom line
+              width: 4,          // thickness
             ),
-          ],
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              size: size.width * 0.1,
-              color: Colors.white,
+              size: size.width * 0.12,
+              color: blackColor, // icon black
             ),
             SizedBox(height: size.height * 0.01),
             Text(
               label,
               style: TextStyle(
-                fontSize: size.width * 0.035,
-                color: Colors.white,
+                fontSize: size.width * 0.04,
+                color: blackColor, // text black
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
