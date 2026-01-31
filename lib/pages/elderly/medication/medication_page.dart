@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
+<<<<<<< HEAD
 import 'medication_detail_page.dart'; // We will create this read-only detail page next
+=======
+import '../../../services/notification_service.dart';
+import 'package:intl/intl.dart';
+>>>>>>> main
 
 class ElderlyMedicationListPage extends StatefulWidget {
   const ElderlyMedicationListPage({super.key});
@@ -46,6 +51,7 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Medications'),
@@ -108,9 +114,31 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
                 ...completed.map((doc) => _buildMedCard(doc, isTaken: true)),
               ],
             ],
+=======
+    return StreamBuilder<QuerySnapshot>(
+      stream: _fs.getMedicationsStream(elderId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error loading medications'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final docs = snapshot.data!.docs;
+
+        if (docs.isEmpty) {
+          return const Center(
+            child: Text('No medications found.'),
+>>>>>>> main
           );
-        },
-      ),
+        }
+
+        return ListView(
+          padding: const EdgeInsets.all(12),
+          children: docs.map((doc) => medicationCard(doc)).toList(),
+        );
+      },
     );
   }
 

@@ -1,14 +1,23 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'pages/elderly/elderly_home.dart';
-import 'services/notification_service.dart';
 import 'firebase_options.dart';
-import 'pages/caregiver/caregiver_home.dart';
+import 'auth/sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationService().init(); // initialize notifications
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform.copyWith(
+        authDomain: kIsWeb ? 'buddi-94585.firebaseapp.com' : null,
+      ),
+    );
+  } catch (e) {
+    // Print any Firebase initialization errors
+    debugPrint('Firebase init error: $e');
+  }
+
   runApp(const BuddiApp());
 }
 
@@ -20,11 +29,9 @@ class BuddiApp extends StatelessWidget {
     return MaterialApp(
       title: 'Buddi App',
       debugShowCheckedModeBanner: false,
-
-      // ✅ GOOGLE SANS FLEX APPLIED HERE (GLOBAL)
       theme: ThemeData(
-        fontFamily: 'GoogleSansFlex',
         primarySwatch: Colors.blue,
+<<<<<<< HEAD
 
         // ✅ Elderly-friendly typography defaults
         textTheme: const TextTheme(
@@ -144,7 +151,11 @@ class RoleSelectionPage extends StatelessWidget {
             ),
           ],
         ),
+=======
+        fontFamily: 'GoogleSansFlex',
+>>>>>>> main
       ),
+      home: SignInPage(),
     );
   }
 }

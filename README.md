@@ -103,48 +103,50 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 - **Smartphones:** Android
 
 #### 1.3 Logical Design
-- **Sequence Diagram**
 
-| Mainpage (Big Buttons)|
-|-------------------|
-| ![Mainpage](dashboard-img/Screenshot%20(151).png) | 
-
-| Medication Reminders | Hospital Appointment Reminders |
-|-------------------|-----------------|
-| ![Medication Reminders](dashboard-img/Screenshot%20(151).png) | ![Hospital Appointment Reminders ](dashboard-img/Screenshot%20(152).png) | 
-
-| Pedometer | Weekly Email Automation |
-|-------------------|-----------------|
-| ![Pedometer](dashboard-img/Screenshot%20(157).png) | ![Weekly Email Automation](dashboard-img/Screenshot%20(153).png) | 
+## **Sequence Diagram**
 
 <br>
 
-- **Screen Navigation Flow**
+
+| Mainpage (Big Buttons)|
+|-------------------|
+| <p align="center">
+  <img src="./assets/module1.drawio.png" width="300"/> </p> | 
+
+| Medication Reminders | Hospital Appointment Reminders |
+|-------------------|-----------------|
+| ![Medication Reminders](assets/module2.drawio.png) | ![Hospital Appointment Reminders ](assets/module3.drawio.png) | 
+
+| Pedometer | Weekly Email Automation |
+|-------------------|-----------------|
+| ![Pedometer](assets/Module4.png) | ![Weekly Email Automation](assets/Module6.png) | 
+
+<br>
+
+## **Screen Navigation Flow**
  
 ![Screen Navigation Flow](screen-nav-flow.png)
 
 
 ### 2. Planning
 
-#### 2.1 Project Timeline Overview (Gantt Chart)
+## 2.1 Project Timeline Overview (Gantt Chart)
 
 ![Gantt Chart](Gantt-Chart.png)
 
 
 # 3. Project Design
 
-### 1. User Interface (UI) 
-etc etc etc etc
-### 2. User Experience (UX)
-etc etc etc
-### 3. Consistency
-#### 3.1 Color Palette
+## 1. User Interface (UI) 
+etc
+## 2. User Experience (UX)
+etc
+## 3. Consistency
+### 3.1 Color Palette
 
-<p><span style="background-color:#4b70f6; color:white; padding:5px 10px; border-radius:5px;">#Blue</span></p>
-<p><span style="background-color:#fdbd00; color:white; padding:5px 10px; border-radius:5px;">#Red</span></p>
-<p><span style="background-color:#fe802e; color:white; padding:5px 10px; border-radius:5px;">#Red</span></p>
-
-<br>
+![Color Pallette 1](./assets/color-pallete1.svg) <br><br>
+![Color Pallette 2](./assets/color-pallette.svg)
 
 
 The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. 
@@ -152,14 +154,54 @@ The palette was chosen for high contrast and visibility for elderly users. Blue 
 
 
 
-#### 2.2 Typography
+### 2.2 Typography
 
-Font Family: SF Pro (also known as San Francisco) 
+Font Family: Google Sans Flex
 
-Large, clear fonts improve readability and reduce eye strain for seniors.
+
+<p align="center">
+  <img src="./assets/google-sans-flex.jpeg" width="300"/>
+</p>
+
+Large, Modern, Clear fonts improve readability and reduce eye strain for seniors.
 <br><br>
+
+### 2.3 Iconography
 
 # 4. Project Development
 <br><br>
+
+### 4.1 Functionality Implementation
+### 4.2 Code Quality
+
+
+## Project Structure
+
+- **lib/auth/**  
+  Handles authentication logic such as login, registration, and user access control
+
+- **lib/pages/**  
+  Holds all the main screens (pages) of the application.
+
+- **lib/pages/elderly/**  
+  Pages designed specifically for elderly user role, focusing on accessibility and basic reminders
+
+- **lib/pages/caregiver/**  
+  Pages for caregivers to input medication and appoinment, monitor, and assist elderly users.
+
+- **lib/services/**  
+  Handles application services including API calls, database operations, and backend interactions.
+
+- **lib/utils/**  
+  Utility functions, helper methods, and constant values used throughout the app.
+
+- **lib/widgets/**  
+  Reusable UI components shared across different pages.
+
+### 4.3 Packages and Plugins
+### 4.4 Collaborative Tool
+
+- GitHub: Version control.
+- Branching Strategy: Created separate branches for each features and merged into main after code review.
 
 # 5. References
