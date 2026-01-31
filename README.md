@@ -112,7 +112,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 | Mainpage (Big Buttons)|
 |-------------------|
 | <p align="center">
-  <img src="./assets/module1.drawio.png" width="400"/> </p> | 
+  <img src="./assets/module1.drawio.png" width="300"/> </p> | 
 
 | Medication Reminders | Hospital Appointment Reminders |
 |-------------------|-----------------|
