@@ -1,11 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import '../../widgets/bottom_nav_bar.dart'; 
-import 'medication/medication_page.dart'; 
-import 'appointment/appointment_page.dart';
-=======
 import 'package:intl/intl.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import '../../widgets/elderly_bottom_nav_bar.dart';
@@ -13,7 +8,6 @@ import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/steps_page.dart';
 import '../elderly/profile/profile_page.dart';
->>>>>>> main
 
 // ---------------- COLOR PALETTE ----------------
 const Color blackColor = Color(0xFF000000);
@@ -38,7 +32,6 @@ class ElderlyHomePage extends StatefulWidget {
 }
 
 class _ElderlyHomePageState extends State<ElderlyHomePage> {
-<<<<<<< HEAD
   int _selectedIndex = 2; 
 
   final List<Widget> _pages = [
