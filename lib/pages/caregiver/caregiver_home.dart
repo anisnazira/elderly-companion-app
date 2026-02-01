@@ -1,8 +1,13 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'profile/profile_caregiver.dart';
 import 'appointment/appointment_list.dart';
 import 'medication/medication_list.dart';
 import '../../widgets/caregiver_bottom_nav_bar.dart';
+
+// ---------------- COLORS ----------------
+const Color blackColor = Color(0xFF000000);
+const Color whiteColor = Color(0xFFFDFBFE);
 
 class CaregiverHomePage extends StatefulWidget {
   const CaregiverHomePage({super.key});
@@ -33,6 +38,7 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
     });
   }
 
+  // ---------------- SCAFFOLD ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(

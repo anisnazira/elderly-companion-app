@@ -3,70 +3,40 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatf
 import 'package:flutter/material.dart' show Border, BorderRadius, BorderSide, BoxDecoration, BuildContext, Center, Color, Colors, Column, Container, CrossAxisAlignment, EdgeInsets, Expanded, FontWeight, GestureDetector, Icon, IconData, Icons, MainAxisAlignment, MediaQuery, Padding, Row, Scaffold, SizedBox, State, StatefulWidget, StatelessWidget, TargetPlatform, Text, TextStyle, VoidCallback, Widget;
 import 'package:intl/intl.dart';
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../widgets/elderly_bottom_nav_bar.dart';
 import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/steps_page.dart';
 import 'package:buddi/pages/elderly/profile/profile_page.dart';
 
-// ---------------- COLOR PALETTE ----------------
+// ---------------- COLORS ----------------
 const Color blackColor = Color(0xFF000000);
 const Color whiteColor = Color(0xFFFDFBFE);
-const Color brightPurpleColor = Color(0xFF7F00FF);
-const Color lightGreenColor = Color(0xFFD9FD6D);
-const Color orangeColor = Color(0xFFE9914E);
-const Color blueColor = Color(0xFF52B1FF);
-const Color redColor = Color(0xFFFF8C75);
 
 // ---------------- ELDERLY HOME PAGE ----------------
 class ElderlyHomePage extends StatefulWidget {
   final String selectedRole;
 
-  const ElderlyHomePage({
-    super.key,
-    required this.selectedRole,
-  });
+  const ElderlyHomePage({super.key, required this.selectedRole});
 
   @override
   State<ElderlyHomePage> createState() => _ElderlyHomePageState();
 }
 
 class _ElderlyHomePageState extends State<ElderlyHomePage> {
-  late String _currentTime;
-  late String _currentDay;
-  int _currentIndex = 2; // Home tab
-  Timer? _timer;
+  int _currentIndex = 2; // home tab
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
 
   @override
   void initState() {
     super.initState();
-    _updateTime();
+    _user = _auth.currentUser;
   }
 
-  void _updateTime() {
-    _timer?.cancel();
-
-    final now = DateTime.now();
-    _currentTime = DateFormat('hh:mm a').format(now);
-    _currentDay = DateFormat('EEEE, MMM d, yyyy').format(now);
-
-    _timer = Timer(
-      Duration(seconds: 60 - now.second),
-      () {
-        if (mounted) {
-          setState(_updateTime);
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  // ---------------- PAGE SWITCHING ----------------
+  // ---------------- PAGE SWITCH ----------------
   Widget _getBody() {
     switch (_currentIndex) {
       case 0:
@@ -88,114 +58,124 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   Widget _homeContent() {
     final size = MediaQuery.of(context).size;
 
-    final String testPhoneNumber = "0123456789";
-    final String testEmergencyNumber = "999";
+    const testPhone = "0123456789";
+    const emergencyNumber = "999";
 
-    // ---------------- BUTTON ACTIONS ----------------
-    void _openDialer(String number) {
+    // ---------- ACTIONS ----------
+    void _dial(String number) {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent =
-            AndroidIntent(action: 'android.intent.action.DIAL', data: 'tel:$number');
-        intent.launch();
+        AndroidIntent(action: 'android.intent.action.DIAL', data: 'tel:$number').launch();
       }
     }
 
-    void _openWhatsApp(String number) {
+    void _whatsapp(String number) {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = AndroidIntent(
-            action: 'android.intent.action.VIEW', data: 'https://wa.me/$number');
-        intent.launch();
+        AndroidIntent(
+          action: 'android.intent.action.VIEW',
+          data: 'https://wa.me/$number',
+        ).launch();
       }
     }
 
-    void _openCamera() {
+    void _camera() {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = AndroidIntent(action: 'android.media.action.IMAGE_CAPTURE');
-        intent.launch();
+        AndroidIntent(action: 'android.media.action.IMAGE_CAPTURE').launch();
       }
     }
 
-    void _openCalendar() {
+    void _calendar() {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent =
-            AndroidIntent(action: 'android.intent.action.MAIN', package: 'com.android.calendar');
-        intent.launch();
+        AndroidIntent(
+          action: 'android.intent.action.VIEW',
+          data: 'content://com.android.calendar/time/', // tells it to open calendar
+          ).launch();
       }
     }
 
-    void _emergencyCall() {
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        final intent = AndroidIntent(
-          action: 'android.intent.action.DIAL',
-          data: 'tel:$testEmergencyNumber',
-        );
-        intent.launch();
-      }
-    }
+    // ---------- GREETING ----------
+    final hour = int.parse(DateFormat('kk').format(DateTime.now()));
+    String greeting = 'Good Evening';
+    if (hour >= 5 && hour < 12) greeting = 'Good Morning';
+    if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
 
-    // ---------------- UI ----------------
     return Padding(
       padding: EdgeInsets.all(size.width * 0.05),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: size.height * 0.06),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: size.height * 0.04),
 
-          // TIME
-          Text(
-            _currentTime,
-            style: TextStyle(
-              fontSize: size.width * 0.12,
-              fontWeight: FontWeight.bold,
-              color: blackColor,
+            /// Greeting
+            Center(
+              child: Text(
+                greeting,
+                style: TextStyle(
+                  fontSize: size.width * 0.05,
+                  color: Colors.black54,
+                ),
+              ),
             ),
-          ),
+            SizedBox(height: 50),
 
-          SizedBox(height: size.height * 0.005),
-
-          // DAY
-          Text(
-            _currentDay,
-            style: TextStyle(
-              fontSize: size.width * 0.045,
-              color: blackColor.withOpacity(0.7),
+            /// Hello User
+            Text(
+              "Hello ${_user?.displayName ?? 'Darshak'},",
+              style: TextStyle(
+                fontSize: size.width * 0.045,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+            SizedBox(height: 5),
 
-          SizedBox(height: size.height * 0.02),
-
-          // Steps & Medication info
-          Text(
-            "Steps Taken: 3450 | Next Med: 10:30 AM",
-            style: TextStyle(
-              fontSize: size.width * 0.035,
-              color: blackColor,
+            /// Steps & Next Med
+            Text(
+              "Steps Taken & Next Medication",
+              style: TextStyle(
+                fontSize: size.width * 0.07,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+            SizedBox(height: 25),
 
-          SizedBox(height: size.height * 0.04),
+            /// Search Bar
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Search",
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
 
-          // ---------------- BUTTON GRID ----------------
-          Expanded(
-            child: Column(
+            /// ---------------- 5 BUTTONS ----------------
+            Column(
               children: [
                 Row(
                   children: [
                     Expanded(
-                      child: ColoredActionButton(
+                      child: AnimatedActionButton(
                         label: "Call",
                         icon: Icons.phone,
-                        color: blueColor,
-                        onTap: () => _openDialer(testPhoneNumber),
+                        gradient: const [Color(0xFF36D1DC), Color(0xFF5B86E5)],
+                        onTap: () => _dial(testPhone),
                       ),
                     ),
                     SizedBox(width: size.width * 0.04),
                     Expanded(
-                      child: ColoredActionButton(
+                      child: AnimatedActionButton(
                         label: "WhatsApp",
                         icon: Icons.message,
-                        color: orangeColor,
-                        onTap: () => _openWhatsApp(testPhoneNumber),
+                        gradient: const [Color(0xFF56ab2f), Color(0xFFa8e063)],
+                        onTap: () => _whatsapp(testPhone),
                       ),
                     ),
                   ],
@@ -204,37 +184,36 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                 Row(
                   children: [
                     Expanded(
-                      child: ColoredActionButton(
+                      child: AnimatedActionButton(
                         label: "Camera",
                         icon: Icons.camera_alt,
-                        color: brightPurpleColor,
-                        onTap: _openCamera,
+                        gradient: const [Color(0xFF7F00FF), Color(0xFFE100FF)],
+                        onTap: _camera,
                       ),
                     ),
                     SizedBox(width: size.width * 0.04),
                     Expanded(
-                      child: ColoredActionButton(
+                      child: AnimatedActionButton(
                         label: "Calendar",
                         icon: Icons.calendar_today,
-                        color: lightGreenColor,
-                        onTap: _openCalendar,
+                        gradient: const [Color(0xFFF7971E), Color(0xFFFFD200)],
+                        onTap: _calendar,
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: size.height * 0.025),
-                // Emergency button spans full width
-                ColoredActionButton(
+                AnimatedActionButton(
                   label: "Emergency",
                   icon: Icons.warning,
-                  color: redColor,
-                  onTap: _emergencyCall,
                   fullWidth: true,
+                  gradient: const [Color(0xFFFF416C), Color(0xFFFF4B2B)],
+                  onTap: () => _dial(emergencyNumber),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -247,71 +226,103 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
       body: _getBody(),
       bottomNavigationBar: ElderlyBottomNavBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }
 }
 
-// ---------------- GOOGLE-STYLE BOTTOM-LINE BUTTON ----------------
-class ColoredActionButton extends StatelessWidget {
+// ===================================================================
+// ================= ANIMATED ACTION BUTTON ===========================
+// ===================================================================
+class AnimatedActionButton extends StatefulWidget {
   final String label;
   final IconData icon;
-  final Color color; // background
   final VoidCallback onTap;
+  final List<Color> gradient;
   final bool fullWidth;
 
-  const ColoredActionButton({
+  const AnimatedActionButton({
     super.key,
     required this.label,
     required this.icon,
-    this.color = Colors.white,
     required this.onTap,
+    required this.gradient,
     this.fullWidth = false,
   });
 
   @override
+  State<AnimatedActionButton> createState() => _AnimatedActionButtonState();
+}
+
+class _AnimatedActionButtonState extends State<AnimatedActionButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+      lowerBound: 0.0,
+      upperBound: 0.08,
+    )..addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final scale = 1 - _controller.value;
 
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: size.height * 0.12,
-        width: fullWidth ? double.infinity : null,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-          border: Border(
-            bottom: BorderSide(
-              color: blackColor, // thick bottom line
-              width: 4,          // thickness
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: Transform.scale(
+        scale: scale,
+        child: Container(
+          height: size.height * 0.12,
+          width: widget.fullWidth ? double.infinity : null,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: widget.gradient,
             ),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 18,
+                offset: Offset(0, 12),
+              )
+            ],
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: size.width * 0.12,
-              color: blackColor, // icon black
-            ),
-            SizedBox(height: size.height * 0.01),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: size.width * 0.04,
-                color: blackColor, // text black
-                fontWeight: FontWeight.bold,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(widget.icon, size: size.width * 0.12, color: Colors.white),
+              const SizedBox(height: 6),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  fontSize: size.width * 0.042,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
