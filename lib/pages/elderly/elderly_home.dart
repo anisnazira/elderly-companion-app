@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Border, BorderRadius, BorderSide, BoxDecoration, BuildContext, Center, Color, Colors, Column, Container, CrossAxisAlignment, EdgeInsets, Expanded, FontWeight, GestureDetector, Icon, IconData, Icons, MainAxisAlignment, MediaQuery, Padding, Row, Scaffold, SizedBox, State, StatefulWidget, StatelessWidget, TargetPlatform, Text, TextStyle, VoidCallback, Widget;
 import 'package:intl/intl.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import '../../widgets/elderly_bottom_nav_bar.dart';
 import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/steps_page.dart';
-import '../elderly/profile/profile_page.dart';
+import 'package:buddi/pages/elderly/profile/profile_page.dart';
 
 // ---------------- COLOR PALETTE ----------------
 const Color blackColor = Color(0xFF000000);
@@ -32,16 +32,6 @@ class ElderlyHomePage extends StatefulWidget {
 }
 
 class _ElderlyHomePageState extends State<ElderlyHomePage> {
-  int _selectedIndex = 2; 
-
-  final List<Widget> _pages = [
-    const ElderlyMedicationListPage(), // Index 0
-    const AppointmentPage(),           // Index 1
-    const Center(child: Text("Home Dashboard")), // Index 2
-    const Center(child: Text("Steps Tracker")),  // Index 3
-    const Center(child: Text("Profile Page")),   // Index 4
-  ];
-=======
   late String _currentTime;
   late String _currentDay;
   int _currentIndex = 2; // Home tab
@@ -52,7 +42,6 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     super.initState();
     _updateTime();
   }
->>>>>>> main
 
   void _updateTime() {
     _timer?.cancel();
@@ -81,7 +70,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   Widget _getBody() {
     switch (_currentIndex) {
       case 0:
-        return const MedicationPage();
+        return const ElderlyMedicationListPage();
       case 1:
         return const AppointmentPage();
       case 2:
@@ -254,18 +243,6 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      appBar: AppBar(
-        title: const Text('Elderly Dashboard'),
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-=======
       backgroundColor: whiteColor,
       body: _getBody(),
       bottomNavigationBar: ElderlyBottomNavBar(
@@ -336,7 +313,6 @@ class ColoredActionButton extends StatelessWidget {
             ),
           ],
         ),
->>>>>>> main
       ),
     );
   }

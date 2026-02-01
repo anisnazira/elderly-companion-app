@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../caregiver/profile/profile_caregiver.dart';
-import '../caregiver/appointment/add_appointment_page.dart';
-import '../caregiver/medication/add_medication_page.dart';
+import 'profile/profile_caregiver.dart';
+import 'appointment/appointment_list.dart';
+import 'medication/medication_list.dart';
+import '../../widgets/caregiver_bottom_nav_bar.dart';
 
 class CaregiverHomePage extends StatefulWidget {
   const CaregiverHomePage({super.key});
@@ -10,15 +11,21 @@ class CaregiverHomePage extends StatefulWidget {
 }
 
 class _CaregiverHomePageState extends State<CaregiverHomePage> {
-  int _currentIndex = 2;
+  int _selectedIndex = 2;
 
-  final List<Widget> _pages = [
-    const AddMedicationPage(),    // index 0
-    const AddAppointmentPage(),   // index 1
-    const Center(child: Text('Home Page')), // index 2
-    const Center(child: Text('Steps Page')), // index 3
-    const Center(child: Text('Profile Page')), // index 4
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const MedicationListPage(),    // index 0
+      const AppointmentListPage(),   // index 1
+      const Center(child: Text('Home Page')), // index 2
+      const Center(child: Text('Steps Page')), // index 3
+      const ProfileCaregiverPage(),  // index 4
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -29,12 +36,12 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Elderly Home')),
+      appBar: AppBar(title: const Text('Caregiver Home')),
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavBar(
+      bottomNavigationBar: CaregiverBottomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),

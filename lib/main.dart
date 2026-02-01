@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'auth/sign_in.dart';
+import 'pages/elderly/elderly_home.dart';
+import 'pages/caregiver/caregiver_home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +32,6 @@ class BuddiApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-<<<<<<< HEAD
-
         // ✅ Elderly-friendly typography defaults
         textTheme: const TextTheme(
           bodyLarge: TextStyle(fontSize: 18),
@@ -134,7 +133,7 @@ class RoleSelectionPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ElderlyHomePage()),
+                  MaterialPageRoute(builder: (_) => const ElderlyHomePage(selectedRole: 'elderly')),
                 );
               },
               child: const Text('Elderly'),
@@ -151,11 +150,7 @@ class RoleSelectionPage extends StatelessWidget {
             ),
           ],
         ),
-=======
-        fontFamily: 'GoogleSansFlex',
->>>>>>> main
       ),
-      home: SignInPage(),
     );
   }
 }

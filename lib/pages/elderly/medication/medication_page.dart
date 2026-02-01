@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
-<<<<<<< HEAD
-import 'medication_detail_page.dart'; // We will create this read-only detail page next
-=======
 import '../../../services/notification_service.dart';
-import 'package:intl/intl.dart';
->>>>>>> main
+import 'medication_detail_page.dart';
 
 class ElderlyMedicationListPage extends StatefulWidget {
   const ElderlyMedicationListPage({super.key});
@@ -51,70 +47,6 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Medications'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _fs.getMedicationsStream(elderId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) return const Center(child: Text('Something went wrong'));
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final medications = snapshot.data?.docs ?? [];
-
-          if (medications.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.check_circle_outline, size: 80, color: Colors.grey[300]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No medications for today.',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // Separate lists
-          final pending = medications.where((doc) => doc['taken'] == false).toList();
-          final completed = medications.where((doc) => doc['taken'] == true).toList();
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (pending.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    "To Take",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
-                  ),
-                ),
-                ...pending.map((doc) => _buildMedCard(doc, isTaken: false)),
-                const SizedBox(height: 24),
-              ],
-
-              if (completed.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    "Completed",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
-                  ),
-                ),
-                ...completed.map((doc) => _buildMedCard(doc, isTaken: true)),
-              ],
-            ],
-=======
     return StreamBuilder<QuerySnapshot>(
       stream: _fs.getMedicationsStream(elderId),
       builder: (context, snapshot) {
@@ -128,15 +60,24 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
         final docs = snapshot.data!.docs;
 
         if (docs.isEmpty) {
-          return const Center(
-            child: Text('No medications found.'),
->>>>>>> main
-          );
-        }
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle_outline, size: 80, color: Colors.grey[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No medications yet.',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
 
         return ListView(
           padding: const EdgeInsets.all(12),
-          children: docs.map((doc) => medicationCard(doc)).toList(),
+          children: docs.map((doc) => _buildMedCard(doc, isTaken: doc.get('taken') ?? false)).toList(),
         );
       },
     );
