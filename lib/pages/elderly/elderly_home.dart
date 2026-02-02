@@ -8,8 +8,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../widgets/elderly_bottom_nav_bar.dart';
 import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
+<<<<<<< HEAD
 import '../elderly/steps/steps_page.dart';
 import 'package:buddi/pages/elderly/profile/profile_page.dart';
+=======
+import '../elderly/steps/pedometer_page.dart';
+import '../elderly/profile/profile_page.dart';
+>>>>>>> 5ef03ddbde6d850746c576d3510e8d107cb6b130
 
 // ---------------- COLORS ----------------
 const Color blackColor = Color(0xFF000000);
@@ -46,7 +51,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
       case 2:
         return _homeContent();
       case 3:
-        return const StepsPage();
+        return const PedometerPage();
       case 4:
         return ProfilePage(initialRole: widget.selectedRole);
       default:
@@ -120,7 +125,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
 
             /// Hello User
             Text(
-              "Hello ${_user?.displayName ?? 'Darshak'},",
+              "Hello ${_user?.displayName ?? 'Razak Misbun'},",
               style: TextStyle(
                 fontSize: size.width * 0.045,
                 fontWeight: FontWeight.w500,
