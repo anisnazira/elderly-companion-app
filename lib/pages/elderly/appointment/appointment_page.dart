@@ -16,7 +16,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   final String elderId = 'elder_001'; 
 
   Future<void> _markAttended(String docId, bool currentStatus) async {
-    await _fs.updateAppointment(docId, {'attended': !currentStatus});
+    await _fs.updateAppointment(elderId, docId, {'attended': !currentStatus});
     if(!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Attendance status updated")),
@@ -70,7 +70,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
               final doc = docs[index];
               final data = doc.data() as Map<String, dynamic>;
               final date = (data['datetime'] as Timestamp?)?.toDate();
-              final dateStr = date != null ? DateFormat.yMMMd().format(date) : 'No Date';
               final timeStr = date != null ? DateFormat.jm().format(date) : '';
               final attended = data['attended'] ?? false;
 

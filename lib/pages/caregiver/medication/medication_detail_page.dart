@@ -34,7 +34,8 @@ class MedicationDetailPage extends StatelessWidget {
     );
 
     if (confirm == true) {
-      await FirestoreService().deleteMedication(docId);
+      final elderId = medicationData['elderId'] ?? 'elder_001';
+      await FirestoreService().deleteMedication(elderId, docId);
       if (!context.mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(

@@ -34,7 +34,8 @@ class AppointmentDetailPage extends StatelessWidget {
     );
 
     if (confirm == true) {
-      await FirestoreService().deleteAppointment(docId);
+      final elderId = appointmentData['elderId'] ?? 'elder_001';
+      await FirestoreService().deleteAppointment(elderId, docId);
       if (!context.mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
-import '../../../services/notification_service.dart';
 import 'medication_detail_page.dart';
 
 class ElderlyMedicationListPage extends StatefulWidget {
@@ -20,7 +19,7 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
     final newStatus = !currentStatus;
     
     // Optimistic UI update handled by StreamBuilder, but we show a snackbar
-    await _fs.updateMedication(docId, {
+    await _fs.updateMedication(elderId, docId, {
       'taken': newStatus,
       'takenAt': newStatus ? DateTime.now() : null,
     });

@@ -132,7 +132,7 @@ class _AddEditMedicationPageState extends State<AddEditMedicationPage> {
     
     if (isEditing) {
       // Update existing medication
-      await _fs.updateMedication(widget.docId!, data);
+      await _fs.updateMedication(elderId, widget.docId!, data);
       documentId = widget.docId!;
       
       // Cancel old notifications
@@ -145,8 +145,8 @@ class _AddEditMedicationPageState extends State<AddEditMedicationPage> {
       data['createdAt'] = DateTime.now();
       
       // Get document reference and extract ID
-      final docRef = await _fs.addMedication(data);
-      documentId = docRef.id;
+      await _fs.addMedication(elderId, data);
+      documentId = (data['name'] as String).hashCode.toString();
     }
 
     // Schedule notifications for each dose time

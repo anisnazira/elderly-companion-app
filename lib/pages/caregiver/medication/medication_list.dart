@@ -16,34 +16,6 @@ class _MedicationListPageState extends State<MedicationListPage> {
   final FirestoreService _fs = FirestoreService();
   final String elderId = 'elder_001'; // Replace with actual auth
 
-  Future<void> _deleteMedication(String docId) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Medication'),
-        content: const Text('Are you sure you want to delete this medication?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await _fs.deleteMedication(docId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Medication deleted')),
-      );
-    }
-  }
-
   void _navigateToAddEdit({Map<String, dynamic>? medicationData, String? docId}) async {
     final result = await Navigator.push(
       context,
@@ -189,7 +161,7 @@ class _MedicationListPageState extends State<MedicationListPage> {
                 },
                 onDismissed: (direction) {
                   if (direction == DismissDirection.endToStart) {
-                    _fs.deleteMedication(doc.id);
+                    _fs.deleteMedication(elderId, doc.id);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('$name deleted'),
@@ -198,7 +170,7 @@ class _MedicationListPageState extends State<MedicationListPage> {
                           label: 'Undo',
                           onPressed: () {
                             // Re-add medication (simplified - you may want to store deleted data)
-                            _fs.addMedication(data);
+                            _fs.addMedication(elderId, data);
                           },
                         ),
                       ),

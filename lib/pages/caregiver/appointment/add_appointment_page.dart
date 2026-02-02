@@ -87,8 +87,8 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
       'createdAt': DateTime.now(),
     };
 
-    final docRef = await _fs.addAppointment(data);
-    final id = docRef.id.hashCode & 0x7fffffff;
+    await _fs.addAppointment(elderId, data);
+    final id = (data['clinic'] as String).hashCode & 0x7fffffff;
 
     // Schedule reminders
     final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));

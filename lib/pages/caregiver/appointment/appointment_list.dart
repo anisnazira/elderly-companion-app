@@ -16,37 +16,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   final FirestoreService _fs = FirestoreService();
   final String elderId = 'elder_001';
 
-  Future<void> _deleteAppointment(String docId) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Appointment'),
-        content: const Text('Are you sure you want to delete this appointment?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await _fs.deleteAppointment(docId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Appointment deleted'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    }
-  }
-
   void _navigateToAddEdit({Map<String, dynamic>? appointmentData, String? docId}) async {
     final result = await Navigator.push(
       context,
@@ -185,7 +154,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                 },
                 onDismissed: (direction) {
                   if (direction == DismissDirection.endToStart) {
-                    _fs.deleteAppointment(doc.id);
+                    _fs.deleteAppointment(elderId, doc.id);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Appointment at $clinic deleted'),
@@ -193,7 +162,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                         action: SnackBarAction(
                           label: 'Undo',
                           onPressed: () {
-                            _fs.addAppointment(data);
+                            _fs.addAppointment(elderId, data);
                           },
                         ),
                       ),
