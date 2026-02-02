@@ -10,6 +10,7 @@ import '../elderly/appointment/appointment_page.dart';
 import '../elderly/medication/medication_page.dart';
 import '../elderly/steps/pedometer_page.dart';
 import '../elderly/profile/profile_page.dart';
+import '../elderly/weeklyreport/weeklyreport_page.dart';
 
 // ---------------- COLORS ----------------
 const Color blackColor = Color(0xFF000000);
@@ -61,10 +62,12 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
     const testPhone = "0123456789";
     const emergencyNumber = "999";
 
-    // ---------- ACTIONS ----------
     void _dial(String number) {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        AndroidIntent(action: 'android.intent.action.DIAL', data: 'tel:$number').launch();
+        AndroidIntent(
+          action: 'android.intent.action.DIAL',
+          data: 'tel:$number',
+        ).launch();
       }
     }
 
@@ -87,8 +90,8 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
       if (defaultTargetPlatform == TargetPlatform.android) {
         AndroidIntent(
           action: 'android.intent.action.VIEW',
-          data: 'content://com.android.calendar/time/', // tells it to open calendar
-          ).launch();
+          data: 'content://com.android.calendar/time/',
+        ).launch();
       }
     }
 
@@ -116,6 +119,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                 ),
               ),
             ),
+
             SizedBox(height: 50),
 
             /// Hello User
@@ -128,7 +132,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
             ),
             SizedBox(height: 5),
 
-            /// Steps & Next Med
+            /// Title
             Text(
               "Steps Taken & Next Medication",
               style: TextStyle(
@@ -136,27 +140,47 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             SizedBox(height: 25),
 
-            /// Search Bar
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search",
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
+            /// ✅ GENERATE WEEKLY REPORT BUTTON
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WeeklyReportPage(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 55,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
                 ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.bar_chart, color: Colors.black54),
+                    SizedBox(width: 10),
+                    Text(
+                      "Generate Weekly Report",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
+
             SizedBox(height: 30),
 
-            /// ---------------- 5 BUTTONS ----------------
+            /// ---------------- ACTION BUTTONS ----------------
             Column(
               children: [
                 Row(

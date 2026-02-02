@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'role_selection.dart';
+import 'sign_up.dart'; // Make sure this path matches your project
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -13,7 +14,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController emailController =
-      TextEditingController    (text: kDebugMode ? 'razakmisbun@gmail.com' : '');
+      TextEditingController(text: kDebugMode ? 'razakmisbun@gmail.com' : '');
   final TextEditingController passwordController =
       TextEditingController(text: kDebugMode ? '100394' : '');
 
@@ -90,7 +91,7 @@ class _SignInPageState extends State<SignInPage> {
                   children: [
                     SizedBox(height: size.height * 0.05),
 
-                    // Smaller logo
+                    // Logo
                     Image.asset(
                       'assets/buddi-logo.png',
                       width: size.width * 0.35,
@@ -154,7 +155,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     SizedBox(height: size.height * 0.03),
 
-                    // Divider with "or continue with"
+                    // Divider
                     Row(
                       children: [
                         Expanded(
@@ -177,7 +178,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     SizedBox(height: size.height * 0.03),
 
-                    // Social buttons
+                    // Social login buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -212,7 +213,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     SizedBox(height: size.height * 0.03),
 
-                    // Register prompt
+                    // ---------- REGISTER NOW ----------
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -222,13 +223,24 @@ class _SignInPageState extends State<SignInPage> {
                               color: Colors.grey[700],
                               fontSize: size.width * 0.035),
                         ),
-                        SizedBox(width: 4),
-                        Text(
-                          'Register now',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.width * 0.035,
+                        const SizedBox(width: 6),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SignUpPage(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Register now',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.width * 0.035,
+                              decoration: TextDecoration.none,
+                            ),
                           ),
                         ),
                       ],

@@ -78,7 +78,7 @@ class _PedometerPageState extends State<PedometerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F0FF),
+      backgroundColor: const Color.fromARGB(255, 247, 247, 249),
       appBar: AppBar(
         title: const Text("Pedometer"),
         backgroundColor: const Color(0xFF6C63FF),
