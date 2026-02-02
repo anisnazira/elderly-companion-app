@@ -32,7 +32,7 @@ class BuddiApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        // ✅ Elderly-friendly typography defaults
+        fontFamily: 'GoogleSansFlex',
         textTheme: const TextTheme(
           bodyLarge: TextStyle(fontSize: 18),
           bodyMedium: TextStyle(fontSize: 16),
