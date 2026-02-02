@@ -3,18 +3,23 @@ import 'package:intl/intl.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/notification_service.dart';
 
-class AddAppointmentPage extends StatefulWidget {
-  const AddAppointmentPage({super.key});
+class AddEditAppointmentPage extends StatefulWidget {
+  const AddEditAppointmentPage({
+    super.key,
+    required Map<String, dynamic> appointmentData,
+    required String docId,
+  });
 
   @override
-  State<AddAppointmentPage> createState() => _AddAppointmentPageState();
+  State<AddEditAppointmentPage> createState() => _AddEditAppointmentPageState();
 }
 
-class _AddAppointmentPageState extends State<AddAppointmentPage> {
+class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
   final _formKey = GlobalKey<FormState>();
   final _clinicCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   DateTime? _selectedDateTime;
+
   final FirestoreService _fs = FirestoreService();
   final NotificationService _ns = NotificationService();
 
@@ -28,23 +33,48 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
   }
 
   Future<void> _pickDateTime() async {
+    final now = DateTime.now();
+
     final date = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
+      initialDate: now.add(const Duration(days: 1)),
+      firstDate: DateTime(now.year, now.month, now.day + 1), // ✅ tomorrow only
       lastDate: DateTime(2100),
     );
+
     if (date == null) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
     if (time == null) return;
+
     setState(() {
-      _selectedDateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _selectedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
     });
   }
 
   Future<void> _saveAppointment() async {
     if (!_formKey.currentState!.validate() || _selectedDateTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete fields')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all required fields')),
+      );
+      return;
+    }
+
+    // ✅ Extra safety: future-date validation
+    if (_selectedDateTime!.isBefore(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment must be in the future')),
+      );
       return;
     }
 
@@ -57,12 +87,13 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
       'createdAt': DateTime.now(),
     };
 
-    final docRef = await _fs.addAppointment(data);
-    final id = docRef.id.hashCode & 0x7fffffff;
+    await _fs.addAppointment(elderId, data);
+    final id = (data['clinic'] as String).hashCode & 0x7fffffff;
 
-    // schedule reminder 1 day before and 30 minutes before (if in future)
+    // Schedule reminders
     final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));
     final halfHourBefore = _selectedDateTime!.subtract(const Duration(minutes: 30));
+
     if (oneDayBefore.isAfter(DateTime.now())) {
       await _ns.scheduleNotification(
         id: id,
@@ -71,6 +102,7 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
         scheduledDate: oneDayBefore,
       );
     }
+
     if (halfHourBefore.isAfter(DateTime.now())) {
       await _ns.scheduleNotification(
         id: id + 1,
@@ -81,14 +113,25 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
     }
 
     if (!mounted) return;
-    Navigator.pop(context);
+
+    // ✅ Return true so appointment list refreshes
+    Navigator.pop(context, true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateText = _selectedDateTime != null ? DateFormat.yMMMd().add_jm().format(_selectedDateTime!) : 'Pick Date & Time';
+    final dateText = _selectedDateTime != null
+        ? DateFormat.yMMMd().add_jm().format(_selectedDateTime!)
+        : 'Pick Date & Time';
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Appointment')),
+      appBar: AppBar(
+        title: const Text('Add Appointment'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context, true),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -97,8 +140,9 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
             children: [
               TextFormField(
                 controller: _clinicCtrl,
-                decoration: const InputDecoration(labelText: 'Hospital/Clinic'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter clinic' : null,
+                decoration: const InputDecoration(labelText: 'Hospital / Clinic'),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Enter clinic' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -117,14 +161,31 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
                 ],
               ),
               const Spacer(),
-              ElevatedButton(
-                onPressed: _saveAppointment,
-                child: const Text('Save Appointment'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
-              )
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _saveAppointment,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Save'),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

@@ -3,33 +3,68 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Collections: medications, appointments
-  CollectionReference get medications => _db.collection('medications');
-  CollectionReference get appointments => _db.collection('appointments');
+  // --- APPOINTMENTS ---
 
-  // Medication CRUD
-  Future<DocumentReference> addMedication(Map<String, dynamic> data) async {
-    return await medications.add(data);
+  // Adds new appointment with 'pending' status
+  Future<void> addAppointment(String elderlyId, Map<String, dynamic> data) {
+    return _db.collection('users').doc(elderlyId).collection('appointments').add({
+      ...data,
+      'status': 'pending', // Default status for the 'Attend' button logic
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
-  Future<void> updateMedication(String id, Map<String, dynamic> data) async {
-    await medications.doc(id).update(data);
+  Stream<QuerySnapshot> getAppointments(String elderlyId) {
+    return _db.collection('users').doc(elderlyId).collection('appointments')
+        .orderBy('appointmentDate', descending: false).snapshots();
   }
 
-  Stream<QuerySnapshot> getMedicationsStream(String elderId) {
-    return medications.where('elderId', isEqualTo: elderId).snapshots();
+  Stream<QuerySnapshot> getAppointmentsStream(String elderlyId) {
+    return _db.collection('users').doc(elderlyId).collection('appointments')
+        .orderBy('appointmentDate', descending: false).snapshots();
   }
 
-  // Appointment CRUD
-  Future<DocumentReference> addAppointment(Map<String, dynamic> data) async {
-    return await appointments.add(data);
+  // Used when the Elderly clicks "ATTEND"
+  Future<void> markAppointmentAttended(String elderlyId, String appId) {
+    return _db.collection('users').doc(elderlyId).collection('appointments').doc(appId).update({
+      'status': 'attended',
+      'attendedAt': FieldValue.serverTimestamp(),
+    });
   }
 
-  Future<void> updateAppointment(String id, Map<String, dynamic> data) async {
-    await appointments.doc(id).update(data);
+  Future<void> updateAppointment(String elderlyId, String appId, Map<String, dynamic> data) {
+    return _db.collection('users').doc(elderlyId).collection('appointments').doc(appId).update(data);
   }
 
-  Stream<QuerySnapshot> getAppointmentsStream(String elderId) {
-    return appointments.where('elderId', isEqualTo: elderId).snapshots();
+  Future<void> deleteAppointment(String elderlyId, String appId) {
+    return _db.collection('users').doc(elderlyId).collection('appointments').doc(appId).delete();
+  }
+
+  // --- MEDICATIONS ---
+
+  Future<void> addMedication(String elderlyId, Map<String, dynamic> data) {
+    return _db.collection('users').doc(elderlyId).collection('medications').add(data);
+  }
+
+  Stream<QuerySnapshot> getMedicationsStream(String elderlyId) {
+    return _db.collection('users').doc(elderlyId).collection('medications').snapshots();
+  }
+
+  Future<void> updateMedication(String elderlyId, String medId, Map<String, dynamic> data) {
+    return _db.collection('users').doc(elderlyId).collection('medications').doc(medId).update(data);
+  }
+
+  Future<void> deleteMedication(String elderlyId, String medId) {
+    return _db.collection('users').doc(elderlyId).collection('medications').doc(medId).delete();
+  }
+
+  // Marks medication as taken in a sub-collection for history
+  Future<void> markAsTaken(String elderlyId, String medId, String name) {
+    return _db.collection('users').doc(elderlyId).collection('medications').doc(medId)
+        .collection('history').add({
+      'name': name,
+      'timestamp': FieldValue.serverTimestamp(),
+      'status': 'taken',
+    });
   }
 }

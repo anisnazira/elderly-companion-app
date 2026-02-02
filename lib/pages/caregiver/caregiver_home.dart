@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'profile/profile_caregiver.dart';
+import 'appointment/appointment_list.dart';
+import 'medication/medication_list.dart';
+import '../../widgets/caregiver_bottom_nav_bar.dart';
 import 'package:intl/intl.dart';
 
 import '../caregiver/profile/profile_caregiver.dart';
@@ -8,12 +12,12 @@ import '../elderly/weeklyreport/weeklyreport_page.dart';
 
 import 'package:buddi/animated_action_button.dart';
 import 'package:buddi/widgets/caregiver_bottom_nav_bar.dart';
+import '../../animated_action_button.dart';
 
 const Color whiteColor = Color(0xFFFDFBFE);
 
 class CaregiverHomePage extends StatefulWidget {
   const CaregiverHomePage({super.key});
-
   @override
   State<CaregiverHomePage> createState() => _CaregiverHomePageState();
 }
@@ -25,9 +29,9 @@ class _CaregiverHomePageState extends State<CaregiverHomePage> {
   Widget _getBody() {
     switch (_currentIndex) {
       case 0:
-        return const AddMedicationPage();
+        return const MedicationListPage();
       case 1:
-        return const AddAppointmentPage();
+        return const AppointmentListPage();
       case 2:
         return _homeContent();
       case 3:

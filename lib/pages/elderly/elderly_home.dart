@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -41,7 +40,7 @@ class _ElderlyHomePageState extends State<ElderlyHomePage> {
   Widget _getBody() {
     switch (_currentIndex) {
       case 0:
-        return const MedicationPage();
+        return const ElderlyMedicationListPage();
       case 1:
         return const AppointmentPage();
       case 2:
@@ -324,11 +323,11 @@ class _AnimatedActionButtonState extends State<AnimatedActionButton>
               end: Alignment.bottomRight,
               colors: widget.gradient,
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 18,
-                offset: Offset(0, 12),
+                offset: const Offset(0, 12),
               )
             ],
           ),
