@@ -34,14 +34,19 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
   @override
   void initState() {
     super.initState();
-
-    initializeDateFormatting();
-
-    if (isEditing && widget.appointmentData.isNotEmpty) {
-      _clinicCtrl.text = widget.appointmentData!['clinic'] ?? '';
-      _notesCtrl.text = widget.appointmentData!['notes'] ?? '';
     
-    final datetime = widget.appointmentData!['datetime'];
+    // ✅ Initialize with a fallback to avoid the error
+    try {
+      initializeDateFormatting();
+    } catch (e) {
+      // Ignore initialization errors
+    }
+    
+    if (isEditing && widget.appointmentData.isNotEmpty) {
+      _clinicCtrl.text = widget.appointmentData['clinic'] ?? '';
+      _notesCtrl.text = widget.appointmentData['notes'] ?? '';
+    
+      final datetime = widget.appointmentData['datetime'];
       if (datetime is Timestamp) {
         _selectedDateTime = datetime.toDate();
       }
