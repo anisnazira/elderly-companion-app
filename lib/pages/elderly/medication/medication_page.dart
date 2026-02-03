@@ -15,7 +15,71 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
   final FirestoreService _fs = FirestoreService();
   final String elderId = 'elder_001'; // Replace with actual auth
 
-  Future<void> _markAsTaken(String docId, bool currentStatus) async {
+  // Check if current time is within 30 minutes of a scheduled dose time
+  bool _isWithinDoseWindow(List<dynamic>? doseTimes) {
+    if (doseTimes == null || doseTimes.isEmpty) return true; // Allow anytime if no schedule
+    
+    final now = DateTime.now();
+    const windowMinutes = 30;
+    
+    for (final timeStr in doseTimes) {
+      if (timeStr is String) {
+        try {
+          final doseTime = DateTime.parse(timeStr);
+          final difference = now.difference(doseTime).inMinutes.abs();
+          if (difference <= windowMinutes) {
+            return true; // Within the window
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    return false; // Not within any window
+  }
+
+  // Get the next scheduled dose time
+  String _getNextDoseTime(List<dynamic>? doseTimes) {
+    if (doseTimes == null || doseTimes.isEmpty) return 'Anytime';
+    
+    final now = DateTime.now();
+    DateTime? nextDose;
+    
+    for (final timeStr in doseTimes) {
+      if (timeStr is String) {
+        try {
+          final doseTime = DateTime.parse(timeStr);
+          if (doseTime.isAfter(now)) {
+            if (nextDose == null || doseTime.isBefore(nextDose)) {
+              nextDose = doseTime;
+            }
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    if (nextDose != null) {
+      return DateFormat('h:mm a').format(nextDose);
+    }
+    
+    // If no future dose today, check first dose tomorrow
+    if (doseTimes.isNotEmpty && doseTimes[0] is String) {
+      try {
+        final firstDose = DateTime.parse(doseTimes[0]);
+        final tomorrow = firstDose.add(const Duration(days: 1));
+        return '${DateFormat('h:mm a').format(tomorrow)} (tomorrow)';
+      } catch (e) {
+        return 'Later';
+      }
+    }
+    
+    return 'Later';
+  }
+
+  Future<void> _markAsTaken(String docId, bool currentStatus, bool isWithinWindow) async {
     final newStatus = !currentStatus;
     
     // Optimistic UI update handled by StreamBuilder, but we show a snackbar
@@ -76,18 +140,31 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
 
         return ListView(
           padding: const EdgeInsets.all(12),
-          children: docs.map((doc) => _buildMedCard(doc, isTaken: doc.get('taken') ?? false)).toList(),
+          children: docs.map((doc) {
+            final isTaken = doc.get('taken') ?? false;
+            final doseTimes = doc.get('doseTimes') as List<dynamic>?;
+            final isWithinWindow = _isWithinDoseWindow(doseTimes);
+            return _buildMedCard(doc, isTaken: isTaken, isWithinWindow: isWithinWindow, doseTimes: doseTimes);
+          }).toList(),
         );
       },
     );
   }
 
-  Widget _buildMedCard(QueryDocumentSnapshot doc, {required bool isTaken}) {
+  Widget _buildMedCard(QueryDocumentSnapshot doc, {required bool isTaken, required bool isWithinWindow, required List<dynamic>? doseTimes}) {
     final data = doc.data() as Map<String, dynamic>;
     final name = data['name'] ?? 'Medication';
     final dose = data['dose'] ?? '';
-    final timeData = data['time'] as Timestamp?; // Use the specific dose time if available
-    final timeString = timeData != null ? DateFormat.jm().format(timeData.toDate()) : 'Anytime';
+    final timeData = data['firstDoseTime'] as Timestamp?;
+    final firstDoseString = timeData != null ? DateFormat('h:mm a').format(timeData.toDate()) : 'Anytime';
+    final timesPerDay = data['timesPerDay'] ?? 1;
+    final hoursBetween = data['hoursBetween'] ?? 8;
+    
+    final scheduleString = timesPerDay == 1 
+        ? '$firstDoseString daily'
+        : '$timesPerDay times/day, every $hoursBetween hours';
+    
+    final nextDose = _getNextDoseTime(doseTimes);
 
     return Card(
       elevation: 2,
@@ -104,12 +181,12 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isTaken ? Colors.green.shade50 : Colors.red.shade50,
+                  color: isTaken ? Colors.green.shade50 : (isWithinWindow ? Colors.blue.shade50 : Colors.grey.shade50),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.medication,
-                  color: isTaken ? Colors.green : Colors.red,
+                  color: isTaken ? Colors.green : (isWithinWindow ? Colors.blue : Colors.grey),
                   size: 28,
                 ),
               ),
@@ -126,9 +203,25 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$dose • $timeString',
-                      style: TextStyle(color: Colors.grey[700]),
+                      '$dose • $scheduleString',
+                      style: TextStyle(color: Colors.grey[700], fontSize: 13),
                     ),
+                    const SizedBox(height: 4),
+                    if (isTaken)
+                      Text(
+                        'Taken at ${DateFormat('h:mm a').format((data['takenAt'] as Timestamp?)?.toDate() ?? DateTime.now())}',
+                        style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.w500),
+                      )
+                    else if (isWithinWindow)
+                      Text(
+                        'Ready to take now',
+                        style: const TextStyle(color: Colors.blue, fontSize: 12, fontWeight: FontWeight.w500),
+                      )
+                    else
+                      Text(
+                        'Next dose: $nextDose',
+                        style: const TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.w500),
+                      ),
                   ],
                 ),
               ),
@@ -136,12 +229,30 @@ class _ElderlyMedicationListPageState extends State<ElderlyMedicationListPage> {
               // Action Checkbox/Button
               Transform.scale(
                 scale: 1.3,
-                child: Checkbox(
-                  value: isTaken,
-                  activeColor: Colors.green,
-                  shape: const CircleBorder(),
-                  onChanged: (val) => _markAsTaken(doc.id, isTaken),
-                ),
+                child: isWithinWindow || isTaken
+                    ? Checkbox(
+                        value: isTaken,
+                        activeColor: Colors.green,
+                        shape: const CircleBorder(),
+                        onChanged: (val) => _markAsTaken(doc.id, isTaken, isWithinWindow),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Not time yet. Next dose: $nextDose'),
+                              backgroundColor: Colors.orange,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Checkbox(
+                          value: false,
+                          activeColor: Colors.green,
+                          shape: const CircleBorder(),
+                          onChanged: null, // Disabled
+                        ),
+                      ),
               ),
             ],
           ),

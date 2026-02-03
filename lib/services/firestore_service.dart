@@ -16,12 +16,12 @@ class FirestoreService {
 
   Stream<QuerySnapshot> getAppointments(String elderlyId) {
     return _db.collection('users').doc(elderlyId).collection('appointments')
-        .orderBy('appointmentDate', descending: false).snapshots();
+        .orderBy('datetime', descending: false).snapshots();
   }
 
   Stream<QuerySnapshot> getAppointmentsStream(String elderlyId) {
     return _db.collection('users').doc(elderlyId).collection('appointments')
-        .orderBy('appointmentDate', descending: false).snapshots();
+        .orderBy('datetime', descending: false).snapshots();
   }
 
   // Used when the Elderly clicks "ATTEND"

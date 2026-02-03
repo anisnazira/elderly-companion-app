@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'pages/elderly/elderly_home.dart';
 import 'pages/caregiver/caregiver_home.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,13 @@ void main() async {
   } catch (e) {
     // Print any Firebase initialization errors
     debugPrint('Firebase init error: $e');
+  }
+
+  // Initialize notification service and timezone data
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    debugPrint('Notification service init error: $e');
   }
 
   runApp(const BuddiApp());

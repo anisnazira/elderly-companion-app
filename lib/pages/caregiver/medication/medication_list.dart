@@ -16,6 +16,46 @@ class _MedicationListPageState extends State<MedicationListPage> {
   final FirestoreService _fs = FirestoreService();
   final String elderId = 'elder_001'; // Replace with actual auth
 
+  // Get the next scheduled dose time
+  String _getNextDoseTime(List<dynamic>? doseTimes) {
+    if (doseTimes == null || doseTimes.isEmpty) return 'Anytime';
+    
+    final now = DateTime.now();
+    DateTime? nextDose;
+    
+    for (final timeStr in doseTimes) {
+      if (timeStr is String) {
+        try {
+          final doseTime = DateTime.parse(timeStr);
+          if (doseTime.isAfter(now)) {
+            if (nextDose == null || doseTime.isBefore(nextDose)) {
+              nextDose = doseTime;
+            }
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    if (nextDose != null) {
+      return DateFormat('h:mm a').format(nextDose);
+    }
+    
+    // If no future dose today, check first dose tomorrow
+    if (doseTimes.isNotEmpty && doseTimes[0] is String) {
+      try {
+        final firstDose = DateTime.parse(doseTimes[0]);
+        final tomorrow = firstDose.add(const Duration(days: 1));
+        return '${DateFormat('h:mm a').format(tomorrow)} (tomorrow)';
+      } catch (e) {
+        return 'Later';
+      }
+    }
+    
+    return 'Later';
+  }
+
   void _navigateToAddEdit({Map<String, dynamic>? medicationData, String? docId}) async {
     final result = await Navigator.push(
       context,
@@ -118,6 +158,8 @@ class _MedicationListPageState extends State<MedicationListPage> {
               final firstDoseTime = (data['firstDoseTime'] as Timestamp?)?.toDate();
               final taken = data['taken'] ?? false;
               final takenAt = (data['takenAt'] as Timestamp?)?.toDate();
+              final doseTimes = data['doseTimes'] as List<dynamic>?;
+              final nextDose = _getNextDoseTime(doseTimes);
 
               return Dismissible(
                 key: Key(doc.id),
@@ -204,6 +246,14 @@ class _MedicationListPageState extends State<MedicationListPage> {
                             'Taken at ${DateFormat.jm().format(takenAt)}',
                             style: const TextStyle(
                               color: Colors.green,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        else
+                          Text(
+                            'Next dose: $nextDose',
+                            style: const TextStyle(
+                              color: Colors.orange,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

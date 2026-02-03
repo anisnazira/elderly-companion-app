@@ -63,68 +63,113 @@ class _AppointmentPageState extends State<AppointmentPage> {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final doc = docs[index];
-              final data = doc.data() as Map<String, dynamic>;
-              final date = (data['datetime'] as Timestamp?)?.toDate();
-              final timeStr = date != null ? DateFormat.jm().format(date) : '';
-              final attended = data['attended'] ?? false;
+          // Separate appointments into upcoming and past
+          final now = DateTime.now();
+          final upcomingAppointments = [];
+          final pastAppointments = [];
 
-              return Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  onTap: () => _navigateToDetail(data),
-                  leading: Container(
-                    width: 50, // Fix the width so it looks neat
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min, // ✅ FIX: Tells column to shrink to fit
-                      children: [
-                        Text(
-                          date != null ? DateFormat.d().format(date) : '?',
-                          style: const TextStyle(
-                            fontSize: 20, // ✅ FIX: Reduced from 24 to 20 to prevent overflow
-                            fontWeight: FontWeight.bold, 
-                            color: Colors.blue
-                          ),
-                        ),
-                        Text(
-                          date != null ? DateFormat.MMM().format(date) : '',
-                          style: const TextStyle(
-                            fontSize: 12, // ✅ FIX: Slightly smaller month text
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  title: Text(
-                    data['clinic'] ?? 'Clinic',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  subtitle: Text(
-                    '$timeStr\n${data['doctor'] ?? ''}',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () => _markAttended(doc.id, attended),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: attended ? Colors.green : Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text(attended ? 'Done' : 'Confirm'),
+          for (final doc in docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final date = (data['datetime'] as Timestamp?)?.toDate();
+            final attended = data['attended'] ?? false;
+
+            if (date != null) {
+              if (date.isAfter(now) && !attended) {
+                upcomingAppointments.add((doc, data));
+              } else {
+                pastAppointments.add((doc, data));
+              }
+            }
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Upcoming Section
+              if (upcomingAppointments.isNotEmpty) ...[
+                Text(
+                  'Upcoming',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            },
+                const SizedBox(height: 12),
+                ...upcomingAppointments.map((item) => _buildAppointmentCard(item.$2, item.$1)).toList(),
+              ],
+
+              // Past Section
+              if (pastAppointments.isNotEmpty) ...[
+                if (upcomingAppointments.isNotEmpty) const SizedBox(height: 24),
+                Text(
+                  'Past',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...pastAppointments.map((item) => _buildAppointmentCard(item.$2, item.$1)).toList(),
+              ],
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildAppointmentCard(Map<String, dynamic> data, QueryDocumentSnapshot doc) {
+    final date = (data['datetime'] as Timestamp?)?.toDate();
+    final timeStr = date != null ? DateFormat.jm().format(date) : '';
+    final attended = data['attended'] ?? false;
+
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        onTap: () => _navigateToDetail(data),
+        leading: Container(
+          width: 50,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                date != null ? DateFormat.d().format(date) : '?',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold, 
+                  color: Colors.blue
+                ),
+              ),
+              Text(
+                date != null ? DateFormat.MMM().format(date) : '',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ],
+          ),
+        ),
+        title: Text(
+          data['clinic'] ?? 'Clinic',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        subtitle: Text(
+          '$timeStr\n${data['doctor'] ?? ''}',
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        trailing: ElevatedButton(
+          onPressed: () => _markAttended(doc.id, attended),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: attended ? Colors.green : Colors.blue,
+            foregroundColor: Colors.white,
+          ),
+          child: Text(attended ? 'Done' : 'Confirm'),
+        ),
       ),
     );
   }
