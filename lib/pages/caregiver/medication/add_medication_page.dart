@@ -33,6 +33,9 @@ class _AddEditMedicationPageState extends State<AddEditMedicationPage> {
   
   final FirestoreService _fs = FirestoreService();
   final NotificationService _ns = NotificationService();
+  
+  // Hardcoded elderly ID - matches what's used in elderly views
+  // TODO: Replace with actual linked elderly user from database
   final String elderId = 'elder_001';
 
   bool get isEditing => widget.docId != null;

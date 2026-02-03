@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'weeklyshow.dart';
+
 class WeeklyReportPage extends StatefulWidget {
   const WeeklyReportPage({super.key});
 
@@ -19,7 +21,6 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
     _loadLastSentDate();
   }
 
-  /// Load last sent date from Hive
   void _loadLastSentDate() {
     final box = Hive.box('stepsBox');
     final lastSent = box.get('lastWeeklyReport');
@@ -32,26 +33,31 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
     }
   }
 
-  /// Send weekly report
-  Future<void> _sendWeeklyReport() async {
+  Future<void> _showWeeklyReport() async {
     setState(() {
-      statusMessage = "Sending weekly report...";
+      statusMessage = "Preparing weekly report...";
     });
 
     try {
       await WeeklyFamilyUpdate.sendIfNeeded();
 
       setState(() {
-        statusMessage = "Weekly report sent successfully ✅";
+        statusMessage = "Weekly report ready ✅";
       });
 
-      // Update last sent date display
       _loadLastSentDate();
 
-      // --- Removed automatic navigation to Pedometer ---
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WeeklyShowPage(),
+        ),
+      );
     } catch (e) {
       setState(() {
-        statusMessage = "Failed to send weekly report ❌";
+        statusMessage = "Failed to load weekly report ❌";
       });
     }
   }
@@ -60,8 +66,12 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Weekly Family Update"),
-        backgroundColor: const Color(0xFF6C63FF),
+        title: const Text(
+          "Weekly Family Update",
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -75,20 +85,35 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
             const SizedBox(height: 20),
             Text(
               statusMessage,
-              style: const TextStyle(fontSize: 18, color: Colors.black87),
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
+
+            /// ✅ WHITE TEXT + WHITE ICON BUTTON
             ElevatedButton.icon(
-              onPressed: _sendWeeklyReport,
-              icon: const Icon(Icons.send),
-              label: const Text("Send Now"),
+              onPressed: _showWeeklyReport,
+              icon: const Icon(
+                Icons.bar_chart,
+                color: Colors.white,
+              ),
+              label: const Text(
+                "Show Weekly Report",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6C63FF),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 15,
+                ),
               ),
             ),
           ],
@@ -98,24 +123,19 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
   }
 }
 
-/// ===============================
-/// WEEKLY REPORT LOGIC (SERVICE)
-/// ===============================
 class WeeklyFamilyUpdate {
   static Future<void> sendIfNeeded() async {
     final box = Hive.box('stepsBox');
 
-    // Check last sent date
     final lastSent = box.get('lastWeeklyReport');
 
     if (lastSent != null) {
       final lastDate = DateTime.parse(lastSent);
       if (DateTime.now().difference(lastDate).inDays < 7) {
-        return; // Not time yet
+        return;
       }
     }
 
-    // --- GET DATA ---
     final weeklySteps =
         Map<String, int>.from(box.get('weekly', defaultValue: {}));
 
@@ -126,10 +146,7 @@ class WeeklyFamilyUpdate {
     final appointments = box.get('appointments', defaultValue: 0);
     final emergencies = box.get('emergencies', defaultValue: 0);
 
-    // --- SEND TO FIREBASE ---
-    await FirebaseFirestore.instance
-        .collection('weekly_reports')
-        .add({
+    await FirebaseFirestore.instance.collection('weekly_reports').add({
       'familyEmail': 'family@email.com',
       'steps': totalSteps,
       'medsTaken': medsTaken,
@@ -139,7 +156,6 @@ class WeeklyFamilyUpdate {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    // Save sent date
     box.put('lastWeeklyReport', DateTime.now().toIso8601String());
   }
 }

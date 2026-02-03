@@ -78,10 +78,10 @@ class _PedometerPageState extends State<PedometerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 247, 247, 249),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         title: const Text("Pedometer"),
-        backgroundColor: const Color(0xFF6C63FF),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         centerTitle: true,
         elevation: 0,
       ),
@@ -89,7 +89,6 @@ class _PedometerPageState extends State<PedometerPage> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // DAILY CARD
             Container(
               padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
@@ -126,7 +125,6 @@ class _PedometerPageState extends State<PedometerPage> {
 
             const SizedBox(height: 25),
 
-            // WEEKLY SECTION
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(

@@ -39,7 +39,7 @@ class BuddiApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'GoogleSansFlex',
       ),
-      home: const SignInPage(), // 👈 USE YOUR EXISTING SIGN-IN
+      home: const SignInPage(), 
     );
   }
 }
