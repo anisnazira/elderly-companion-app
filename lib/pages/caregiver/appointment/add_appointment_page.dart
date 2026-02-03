@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/notification_service.dart';
@@ -34,7 +35,9 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
   void initState() {
     super.initState();
 
-    if (isEditing && widget.appointmentData != null) {
+    initializeDateFormatting();
+
+    if (isEditing && widget.appointmentData.isNotEmpty) {
       _clinicCtrl.text = widget.appointmentData!['clinic'] ?? '';
       _notesCtrl.text = widget.appointmentData!['notes'] ?? '';
     
