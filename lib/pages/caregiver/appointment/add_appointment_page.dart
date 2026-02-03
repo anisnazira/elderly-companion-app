@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/notification_service.dart';
 
 class AddEditAppointmentPage extends StatefulWidget {
+  final Map<String, dynamic> appointmentData;
+  final String docId;
+
   const AddEditAppointmentPage({
     super.key,
-    required Map<String, dynamic> appointmentData,
-    required String docId,
+    this.appointmentData = const {},
+    this.docId = '',
   });
 
   @override
@@ -22,8 +26,24 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
 
   final FirestoreService _fs = FirestoreService();
   final NotificationService _ns = NotificationService();
-
   final String elderId = 'elder_001';
+
+  bool get isEditing => widget.docId != null && widget.docId.isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (isEditing && widget.appointmentData != null) {
+      _clinicCtrl.text = widget.appointmentData!['clinic'] ?? '';
+      _notesCtrl.text = widget.appointmentData!['notes'] ?? '';
+    
+    final datetime = widget.appointmentData!['datetime'];
+      if (datetime is Timestamp) {
+        _selectedDateTime = datetime.toDate();
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -82,40 +102,57 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
       'clinic': _clinicCtrl.text.trim(),
       'notes': _notesCtrl.text.trim(),
       'datetime': _selectedDateTime,
-      'attended': false,
+      'attended': widget.appointmentData?['attended'] ?? false,  // ✅ Preserve attended status
       'elderId': elderId,
-      'createdAt': DateTime.now(),
+      'updatedAt': DateTime.now(),  // ✅ Add updated timestamp
     };
 
-    await _fs.addAppointment(elderId, data);
-    final id = (data['clinic'] as String).hashCode & 0x7fffffff;
+    try {
+      if (isEditing) {
+        // Update existing appointment
+        await _fs.updateAppointment(elderId, widget.docId!, data);
+      } else {
+        // Add new appointment
+        data['createdAt'] = DateTime.now();  // ✅ Only add createdAt for new
+        await _fs.addAppointment(elderId, data);
+      }
 
-    // Schedule reminders
-    final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));
-    final halfHourBefore = _selectedDateTime!.subtract(const Duration(minutes: 30));
+      // Schedule reminders (same code as before)
+      final id = (data['clinic'] as String).hashCode & 0x7fffffff;
+      
+      final oneDayBefore = _selectedDateTime!.subtract(const Duration(days: 1));
+      final halfHourBefore = _selectedDateTime!.subtract(const Duration(minutes: 30));
 
-    if (oneDayBefore.isAfter(DateTime.now())) {
-      await _ns.scheduleNotification(
-        id: id,
-        title: 'Appointment Reminder',
-        body: 'Tomorrow: ${_clinicCtrl.text}',
-        scheduledDate: oneDayBefore,
+      if (oneDayBefore.isAfter(DateTime.now())) {
+        await _ns.scheduleNotification(
+          id: id,
+          title: 'Appointment Reminder',
+          body: 'Tomorrow: ${_clinicCtrl.text}',
+          scheduledDate: oneDayBefore,
+        );
+      }
+
+      if (halfHourBefore.isAfter(DateTime.now())) {
+        await _ns.scheduleNotification(
+          id: id + 1,
+          title: 'Appointment Reminder',
+          body: 'In 30 minutes: ${_clinicCtrl.text}',
+          scheduledDate: halfHourBefore,
+        );
+      }
+
+      if (!mounted) return;
+      
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving appointment: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
-
-    if (halfHourBefore.isAfter(DateTime.now())) {
-      await _ns.scheduleNotification(
-        id: id + 1,
-        title: 'Appointment Reminder',
-        body: 'In 30 minutes: ${_clinicCtrl.text}',
-        scheduledDate: halfHourBefore,
-      );
-    }
-
-    if (!mounted) return;
-
-    // ✅ Return true so appointment list refreshes
-    Navigator.pop(context, true);
   }
 
   @override
@@ -126,7 +163,7 @@ class _AddEditAppointmentPageState extends State<AddEditAppointmentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Appointment'),
+        title: Text(isEditing ? 'Edit Appointment' : 'Add Appointment'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context, true),

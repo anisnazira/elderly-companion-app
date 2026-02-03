@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../services/firestore_service.dart';
 import '../../../../services/notification_service.dart';
@@ -39,6 +40,9 @@ class _AddEditMedicationPageState extends State<AddEditMedicationPage> {
   @override
   void initState() {
     super.initState();
+
+    initializeDateFormatting();
+
     if (isEditing && widget.medicationData != null) {
       _nameCtrl.text = widget.medicationData!['name'] ?? '';
       _doseCtrl.text = widget.medicationData!['dose'] ?? '';
