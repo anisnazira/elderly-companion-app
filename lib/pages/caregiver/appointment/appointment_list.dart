@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../services/firestore_service.dart';
 import 'add_appointment_page.dart';
@@ -16,6 +15,22 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   final FirestoreService _fs = FirestoreService();
   final String elderId = 'elder_001';
 
+  // ✅ Custom date/time formatters
+  String _formatDate(DateTime dateTime) {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final month = months[dateTime.month - 1];
+    final day = dateTime.day;
+    final year = dateTime.year;
+    return '$month $day, $year';
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final hour = dateTime.hour > 12 ? dateTime.hour - 12 : (dateTime.hour == 0 ? 12 : dateTime.hour);
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
+  }
+
   void _navigateToAddEdit({Map<String, dynamic>? appointmentData, String? docId}) async {
     final result = await Navigator.push(
       context,
@@ -26,7 +41,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         ),
       ),
     );
-
     if (result == true) {
       setState(() {});
     }
@@ -42,7 +56,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         ),
       ),
     );
-
     if (result == true) {
       setState(() {});
     }
@@ -62,13 +75,10 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           final appointments = snapshot.data?.docs ?? [];
-
           if (appointments.isEmpty) {
             return Center(
               child: Column(
@@ -100,7 +110,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               ),
             );
           }
-
           return ListView.builder(
             padding: const EdgeInsets.all(8),
             itemCount: appointments.length,
@@ -111,9 +120,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               final notes = data['notes'] ?? '';
               final datetime = (data['datetime'] as Timestamp?)?.toDate();
               final attended = data['attended'] ?? false;
-
               final isUpcoming = datetime != null && datetime.isAfter(DateTime.now());
-
               return Dismissible(
                 key: Key(doc.id),
                 background: Container(
@@ -192,7 +199,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (datetime != null) ...[
-                          Text('${DateFormat.yMMMd().format(datetime)} at ${DateFormat.jm().format(datetime)}'),
+                          Text('${_formatDate(datetime)} at ${_formatTime(datetime)}'),  // ✅ Use custom formatters
                           if (isUpcoming && !attended)
                             Text(
                               'Upcoming',
@@ -244,7 +251,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'addAppointmentFAB', // ✅ Fix Hero conflict
+        heroTag: 'addAppointmentFAB',
         onPressed: () => _navigateToAddEdit(),
         tooltip: 'Add Appointment',
         child: const Icon(Icons.add),
