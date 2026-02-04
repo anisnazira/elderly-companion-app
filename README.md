@@ -10,7 +10,7 @@ Buddi is an elderly focused companion app that features big, clear buttons for e
 
 | Name       | Matric No | Assigned Tasks                                      |
 |------------|-----------|----------------------------------------------------|
-| ANIS NAZIRA BINTI ABD GHANI   | 2219732   | **1. Project Ideation & Initiation** <br>  Assigned Modules - UI Design, Main page (Big buttons) <br> <br> **2. Requirement Analysis & Planning** <br>  a. Gantt Chart <br> b. Screen Navigation Flow <br> c. Sequence Diagram for Main page (Big buttons) <br> <br>  **3. Code Contribution** <br>a. Auth: sign_in.dart, sign_up.dart, role_selection.dart <br><br> b. Homepage: elderly_home.dart, caregiver_home.dart <br><br> c. Main Navigation: main.dart, elderly_bottom_nav_bar.dart, caregiver_bottom_nav_bar.dart <br><br> d. Profile: profile_page.dart (1), profile_page.dart (2)|
+| ANIS NAZIRA BINTI ABD GHANI   | 2219732   | **1. Project Ideation & Initiation** <br>  Assigned Modules - UI Design, Main page (Big buttons) <br> <br> **2. Requirement Analysis & Planning** <br>  a. Gantt Chart <br> b. Screen Navigation Flow <br> c. Sequence Diagram for Main page (Big buttons) <br> <br>  **3. Code Contribution** <br>a. Auth: sign_in.dart, sign_up.dart, role_selection.dart <br><br> b. Homepage: elderly_home.dart, caregiver_home.dart <br><br> c. Main Navigation: elderly_bottom_nav_bar.dart, caregiver_bottom_nav_bar.dart <br><br> d. Profile: profile_page.dart (1), profile_page.dart (2)|
 | NURAMIRATUL AISYAH BINTI RUZAIDI   | 2212736   | **1. Project Ideation & Initiation** <br> Assigned Modules - Medication and Hospital Appointments Reminders <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Medication Reminders <br> b. Sequence Diagram for Hospital Appointments Reminders <br><br> **3. Code Contribution** <br> a. Medication: medication_detail_page.dart (1), medication_page.dart, add_medication_page.dart, medication_detail_page.dart (2) ,medication_list.dart <br><br> b. Appointment: appointment_detail_page.dart (1), appointment_page.dart, add_appointment_page.dart, appointment_detail_page.dart (2), appointment_list.dart <br><br>             |
 |AISHA MOHMMED ALWAN ALJUBOORI | 2125992   |**1. Project Ideation & Initiation** <br> Assigned Modules - Pedometer, Weekly Email Automation <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Pedometer <br> b. Sequence Diagram for Weekly Email Automation <br> <br>**3. Code Contribution** <br> a. Steps: pedometer_page.dart <br><br> b. Weekly Report: weeklyreport_page.dart, weeklyshow.dart |
 
@@ -138,8 +138,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 |-------------------|-----------------|
 | ![Sign In](assets/sign-in.jpg) | ![Sign Up](assets\sign-up.jpg) | 
 
-🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
-
+🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
 
 
 ### Pages: Elderly
@@ -154,7 +153,7 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 |-------------------|-----------------|-------------------|-----------------|
 | ![Pedometer](assets/medication.jpg) | ![Weekly Report](assets/appoinment.jpg) | ![Medication](assets/steps.jpg) | ![Appointment](assets/weekly-report.jpg)|
 
-🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
+🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
 
 ### Pages: Caregiver
 
@@ -237,6 +236,10 @@ Large, Modern, Clear fonts improve readability and reduce eye strain for seniors
 
 # 5. References
 
-1. dc-exe. Health_and_Doctor_Appointment. GitHub. https://github.com/dc-exe/Health_and_Doctor_Appointment/tree/main
+1. Claude. (2024, February 4). Troubleshooting Flutter page navigation and state management issues [Response to user query]. Claude AI. https://claude.ai
 
-2. dancamdev. article_bouncing_button_animation. GitHub. https://github.com/dancamdev/article_bouncing_button_animation
+2. Flutter. (n.d.). Implement swipe to dismiss. Flutter. https://docs.flutter.dev/cookbook/gestures/dismissible
+
+3. dc-exe. Health_and_Doctor_Appointment. GitHub. https://github.com/dc-exe/Health_and_Doctor_Appointment/tree/main
+
+4. dancamdev. article_bouncing_button_animation. GitHub. https://github.com/dancamdev/article_bouncing_button_animation
