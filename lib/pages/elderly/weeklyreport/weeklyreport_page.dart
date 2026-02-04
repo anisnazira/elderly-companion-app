@@ -158,4 +158,4 @@ class WeeklyFamilyUpdate {
 
     box.put('lastWeeklyReport', DateTime.now().toIso8601String());
   }
-}
+}  
