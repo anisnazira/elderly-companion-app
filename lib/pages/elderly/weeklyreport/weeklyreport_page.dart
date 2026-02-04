@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'weeklyshow.dart';
@@ -126,16 +127,10 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
 class WeeklyFamilyUpdate {
   static Future<void> sendIfNeeded() async {
     final box = Hive.box('stepsBox');
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid ?? 'elder_001';
 
-    final lastSent = box.get('lastWeeklyReport');
-
-    if (lastSent != null) {
-      final lastDate = DateTime.parse(lastSent);
-      if (DateTime.now().difference(lastDate).inDays < 7) {
-        return;
-      }
-    }
-
+    // Generate weekly report immediately without 7-day restriction
     final weeklySteps =
         Map<String, int>.from(box.get('weekly', defaultValue: {}));
 
@@ -146,7 +141,11 @@ class WeeklyFamilyUpdate {
     final appointments = box.get('appointments', defaultValue: 0);
     final emergencies = box.get('emergencies', defaultValue: 0);
 
-    await FirebaseFirestore.instance.collection('weekly_reports').add({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('weekly_reports')
+        .add({
       'familyEmail': 'family@email.com',
       'steps': totalSteps,
       'medsTaken': medsTaken,

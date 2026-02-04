@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class WeeklyShowPage extends StatelessWidget {
@@ -7,6 +8,9 @@ class WeeklyShowPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid ?? 'elder_001';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF3F0FF),
       appBar: AppBar(
@@ -16,10 +20,13 @@ class WeeklyShowPage extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('weekly_reports')
-            .orderBy('createdAt', descending: true)
-            .limit(1)
-            .snapshots(),
+          .collection('users')
+          .doc(userId)
+          .collection('weekly_reports')
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .snapshots(),
+
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -78,7 +85,7 @@ class WeeklyShowPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildRow("Family Email", data['familyEmail']),
+                  buildRow("Family Email", data['familyEmail'] ?? 'N/A'),
                   buildRow("Steps", data['steps'].toString()),
                   buildRow("Meds Taken", data['medsTaken'].toString()),
                   buildRow("Missed Meds", data['medsMissed'].toString()),

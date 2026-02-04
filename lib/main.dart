@@ -2,12 +2,19 @@ import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hive_flutter/hive_flutter.dart'; // ✅ ADD THIS
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'auth/sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔹 INIT HIVE
+  await Hive.initFlutter();
+
+  // 🔹 OPEN YOUR BOX (THIS FIXES THE ERROR)
+  await Hive.openBox('stepsBox');
 
   try {
     await Firebase.initializeApp(
@@ -39,7 +46,7 @@ class BuddiApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'GoogleSansFlex',
       ),
-      home: const SignInPage(), 
+      home: const SignInPage(),
     );
   }
 }

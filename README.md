@@ -10,9 +10,9 @@ Buddi is an elderly focused companion app that features big, clear buttons for e
 
 | Name       | Matric No | Assigned Tasks                                      |
 |------------|-----------|----------------------------------------------------|
-| ANIS NAZIRA BINTI ABD GHANI   | 2219732   | **1. Project Ideation & Initiation** <br>  Assigned Modules - UI Design, Main page (Big buttons) <br> <br> **2. Requirement Analysis & Planning** <br>  a. Gantt Chart <br> b. Screen Navigation Flow <br> c. Sequence Diagram for Main page (Big buttons)|
-| NURAMIRATUL AISYAH BINTI RUZAIDI   | 2212736   | **1. Project Ideation & Initiation** <br> Assigned Modules - Medication and Hospital Appointments Reminders <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Medication Reminders <br> b. Sequence Diagram for Hospital Appointments Reminders               |
-|AISHA MOHMMED ALWAN ALJUBOORI | 2125992   |**1. Project Ideation & Initiation** <br> Assigned Modules - Pedometer, Weekly Email Automation <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Pedometer <br> b. Sequence Diagram for Weekly Email Automation   |
+| ANIS NAZIRA BINTI ABD GHANI   | 2219732   | **1. Project Ideation & Initiation** <br>  Assigned Modules - UI Design, Main page (Big buttons) <br> <br> **2. Requirement Analysis & Planning** <br>  a. Gantt Chart <br> b. Screen Navigation Flow <br> c. Sequence Diagram for Main page (Big buttons) <br> <br>  **3. Code Contribution** <br>a. Auth: sign_in.dart, sign_up.dart, role_selection.dart <br><br> b. Homepage: elderly_home.dart, caregiver_home.dart <br><br> c. Main Navigation: main.dart, elderly_bottom_nav_bar.dart, caregiver_bottom_nav_bar.dart <br><br> d. Profile: profile_page.dart (1), profile_page.dart (2)|
+| NURAMIRATUL AISYAH BINTI RUZAIDI   | 2212736   | **1. Project Ideation & Initiation** <br> Assigned Modules - Medication and Hospital Appointments Reminders <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Medication Reminders <br> b. Sequence Diagram for Hospital Appointments Reminders <br><br> **3. Code Contribution** <br> a. Medication: medication_detail_page.dart (1), medication_page.dart, add_medication_page.dart, medication_detail_page.dart (2) ,medication_list.dart <br><br> b. Appointment: appointment_detail_page.dart (1), appointment_page.dart, add_appointment_page.dart, appointment_detail_page.dart (2), appointment_list.dart <br><br>             |
+|AISHA MOHMMED ALWAN ALJUBOORI | 2125992   |**1. Project Ideation & Initiation** <br> Assigned Modules - Pedometer, Weekly Email Automation <br> <br> **2. Requirement Analysis & Planning** <br>  a. Sequence Diagram for Pedometer <br> b. Sequence Diagram for Weekly Email Automation <br> <br>**3. Code Contribution** <br> a. Steps: pedometer_page.dart <br><br> b. Weekly Report: weeklyreport_page.dart, weeklyshow.dart |
 
 
 <br><br>
@@ -27,7 +27,7 @@ Many older adults struggle with modern smartphones because interfaces are small,
 
 1.	To create a simple, reliable companion app that makes essential phone functions and health reminders immediately accessible to elderly users. 
 2.	To improve medication and appointment adherence with clear reminders.
-3. To provide step tracking to support daily activity monitoring and encourage healthier routines.
+3.  To provide step tracking to support daily activity monitoring and encourage healthier routines.
 4.	To keep family members informed through automated weekly summaries.
 
 ## Target users
@@ -42,11 +42,8 @@ Many older adults struggle with modern smartphones because interfaces are small,
 
 
 ### 1. Big Buttons Interface  
-- Large, high-contrast icons  
-- Adjustable text & button sizes  
-- Home screen with essential functions: Call, Message, Camera, Clock 
-- Large, always-visible emergency icon that calls designated emergency contact and optionally sends SMS with location  
-
+- Large, high-contrast icons   
+- Home screen with essential functions: Call, Message, Camera, Clock, Calendar with large, emergency icon 
 
 ### 2. Medication Reminders  
 - Daily reminders with “Taken / Missed” buttons  
@@ -56,19 +53,16 @@ Many older adults struggle with modern smartphones because interfaces are small,
 ### 3. Hospital Appointment Reminders  
 - Alerts before appointments  
 - Add details like date, location, and notes  
-- Optional map navigation
 
 ### 4. Step Monitoring (Pedometer)  
 - Uses device motion sensor  
 - Tracks daily steps  
-- Weekly trend summary
 
 ### 5. Weekly Family Updates  
-- Automatic email report with:  
+- Automatic report with:  
   - Steps taken  
   - Medications taken/missed  
-  - Appointments attended  
-  - Emergency activations  
+  - Appointments attended   
 - Keeps families informed without disturbing senior’s routine
 
 <br>
@@ -84,7 +78,6 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
   - **Medication schedules**
   - **Hospital appointments**
   - **Step count records**
-  - **Emergency contacts**
   
   **Storage Solutions:**
   - Cloud: **Firebase Firestore** for real-time, scalable storage  
@@ -97,7 +90,6 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
   - `url_launcher` – Emergency calls
   - `camera` – Camera access
   - `intl` – Date/time formatting
-  - `mailer` or Firebase Functions – Weekly email summaries
 
 #### 1.2 Platform Compatibility
 - **Smartphones:** Android
@@ -138,10 +130,40 @@ Buddi is developed using **Flutter (Dart)**, enabling a single codebase for  And
 
 # 3. Project Design
 
-## 1. User Interface (UI) 
-etc
-## 2. User Experience (UX)
-etc
+## 1. UI/UX
+
+### Authentication
+
+| Sign In | Sign Up|
+|-------------------|-----------------|
+| ![Sign In](assets/sign-in.jpg) | ![Sign Up](assets\sign-up.jpg) | 
+
+🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
+
+
+
+### Pages: Elderly
+
+| Homepage | Profile |
+|-------------------|-----------------|
+| ![Homepage](assets/main-page.jpg) | ![Profile](assets/profile-elderly.jpg) | 
+
+
+
+| Pedometer | Weekly Report | Medication | Appointment |
+|-------------------|-----------------|-------------------|-----------------|
+| ![Pedometer](assets/medication.jpg) | ![Weekly Report](assets/appoinment.jpg) | ![Medication](assets/steps.jpg) | ![Appointment](assets/weekly-report.jpg)|
+
+🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹
+
+### Pages: Caregiver
+
+| Homepage | Profile | Medication | Appointment |
+|-------------------|-----------------|-------------------|-----------------|
+| ![Homepage](assets/homepage-caregiver.jpg) | ![Profile](assets/profile-caregiver.jpg) | ![Medication](assets/medication-caregiver.jpg) | ![Appointment](assets/appoinment-caregiver.jpg)|
+
+
+
 ## 3. Consistency
 ### 3.1 Color Palette
 
@@ -150,7 +172,6 @@ etc
 
 
 The palette was chosen for high contrast and visibility for elderly users. Blue provides a calming effect, while red clearly signals missed doses or urgent actions. 
-
 
 
 
@@ -166,12 +187,15 @@ Font Family: Google Sans Flex
 Large, Modern, Clear fonts improve readability and reduce eye strain for seniors.
 <br><br>
 
-### 2.3 Iconography
 
 # 4. Project Development
 <br><br>
 
 ### 4.1 Functionality Implementation
+
+1. Widgets: The app uses StatelessWidget for static UI and StatefulWidget for dynamic screens like weekly reports.
+2. Navigation: Screen transitions are handled with Navigator.push() and MaterialPageRoute, enabling controlled navigation based on user actions.
+
 ### 4.2 Code Quality
 
 
@@ -199,9 +223,20 @@ Large, Modern, Clear fonts improve readability and reduce eye strain for seniors
   Reusable UI components shared across different pages.
 
 ### 4.3 Packages and Plugins
+  - `firebase_auth`, `cloud_firestore` – User data & auth
+  - `flutter_local_notifications` – Reminders
+  - `pedometer` or `health` – Step tracking
+  - `url_launcher` – Emergency calls
+  - `camera` – Camera access
+  - `intl` – Date/time formatting
+
 ### 4.4 Collaborative Tool
 
 - GitHub: Version control.
 - Branching Strategy: Created separate branches for each features and merged into main after code review.
 
 # 5. References
+
+1. dc-exe. Health_and_Doctor_Appointment. GitHub. https://github.com/dc-exe/Health_and_Doctor_Appointment/tree/main
+
+2. dancamdev. article_bouncing_button_animation. GitHub. https://github.com/dancamdev/article_bouncing_button_animation
